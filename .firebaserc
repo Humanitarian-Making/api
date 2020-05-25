@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "humanitarian-making-dev",
+    "prod": "humanitarian-making-production"
+  }
+}

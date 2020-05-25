@@ -1,0 +1,312 @@
+{
+  "type": "FeatureCollection",
+  "features": [{
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [120.401604, 17.62469]
+    },
+    "properties": {
+      "name": "Negosyo Center - Fabrication Laboratory and Co-Working Space Ilocos Region (FabLab Ilocos)",
+      "website": "https://www.facebook.com/FabLabIlocos/",
+      "machinesDesc": "Ultimaker 2+, Da Vinci 1.0 Pro, CNC Laser 48, Modela MDX, CNC ROUTER 48, Roland Print and Cut 640i, Embroidery Machine"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [123.897997, 10.323698]
+    },
+    "properties": {
+      "name": "Fablab UP Cebu",
+      "website": "https://www.facebook.com/fablabupcebu/",
+      "machinesDesc": "Shopbot , Roland Print and Cut 640i"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [123.818223, 10.718669]
+    },
+    "properties": {
+      "name": "Fablab CTU Tuburan",
+      "website": "https://www.facebook.com/ctutuburanfablab/",
+      "machinesDesc": ""
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [125.597891, 8.955382]
+    },
+    "properties": {
+      "name": "Fablab Caraga",
+      "website": "https://www.facebook.com/fablabcaraga/",
+      "machinesDesc": "Da Vinci 1.0 Pro"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [123.903942, 10.293971]
+    },
+    "properties": {
+      "name": "Department of Trade and Industry - Cebu Provincial Office",
+      "website": "https://www.facebook.com/DTI.Cebu/",
+      "machinesDesc": ""
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [123.855793, 9.646682]
+    },
+    "properties": {
+      "name": "Fablab Bohol",
+      "website": "https://www.facebook.com/fablabbohol/",
+      "machinesDesc": "Shopbot , BFB 3D Printer, Bonsai 3D Printer, Delta 3D Printer, Universal Laser Cutter V.60, Roland Print and Cut 640i, Roland MDX 40A"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [120.865996, 14.403501]
+    },
+    "properties": {
+      "name": "Fablab Cavite (Technovation Center)",
+      "website": "",
+      "machinesDesc": ""
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [121.555926, 16.689831]
+    },
+    "properties": {
+      "name": "FabLab Santiago City",
+      "website": "https://www.facebook.com/fablabsantiagocity/",
+      "machinesDesc": "Shopbot , Roland MDX 40A, Universal Laser Cutter V.60, Cube Pro Trio, Xbox Kinetics"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [124.243723, 8.242144]
+    },
+    "properties": {
+      "name": "FAB LAB Mindanao",
+      "website": "https://www.facebook.com/FABLABMindanao/",
+      "machinesDesc": "Ultimaker 3 extended , Ultimaker 2+, Anycubic i3 Mega, Shopbot"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [121.07377, 13.784646]
+    },
+    "properties": {
+      "name": "LIKHA FabLab",
+      "website": "https://www.facebook.com/likha.batstateu/",
+      "machinesDesc": "Ultimaker 3 extended , Markforge Onyx Series, Epilog Helix Laser Cutter, Shopbot , Formec Compac Mini, Graphtech CE6000-60 Plus, Tormach PCNC 440, Epilog FiberMark Metal Laser Engraver"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [121.076157, 14.641589]
+    },
+    "properties": {
+      "name": "Eugenio Lopez Jr. Makerspace",
+      "website": "https://www.facebook.com/AreteAteneo/",
+      "machinesDesc": ""
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [123.729167, 13.147033]
+    },
+    "properties": {
+      "name": "FabLab Bicol",
+      "website": "https://www.facebook.com/Fablabbicol/",
+      "machinesDesc": "Shopbot , Roland Print and Cut 640i, Universal Laser Cutter V.60, Anhui CZ1237G Gap Bed Latthe, Generic Heat Press, Ultimaker 3, Cube Pro Trio, Roland MDX 40A, Makita Scroll Saw, Artech EVA 3D Scanner"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [120.993302, 14.605555]
+    },
+    "properties": {
+      "name": "Fablab Manila",
+      "website": "https://www.facebook.com/FABLABManila/",
+      "machinesDesc": ""
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [123.191786, 13.631805]
+    },
+    "properties": {
+      "name": "BISCAST Man Fab Lab",
+      "website": "https://www.facebook.com/biscastmanfablab",
+      "machinesDesc": "Zomai CNC Latthe Machine Model: ZM-1516, Shopbot , Synrad Firestar TN6090, Roland MDX 40A, Roland Print and Cut 640i, XYZ Printing Pro (FDM), Atom Delta 3D Printer"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [122.058602, 6.913473]
+    },
+    "properties": {
+      "name": "Zampen Fablab",
+      "website": "https://www.facebook.com/zampenfablab10716/",
+      "machinesDesc": "Roland MDX 40A, Cube Pro Trio, Shopbot , CMA-1390 Laser Engraving & Cutting Machine, Roland Print and Cut 640i"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [123.735202, 13.139405]
+    },
+    "properties": {
+      "name": "DTI Region V Office",
+      "website": "https://www.facebook.com/DTI.Region5/",
+      "machinesDesc": ""
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [121.061803, 14.651965]
+    },
+    "properties": {
+      "name": "Fablab UP College of Fine Arts",
+      "website": "https://www.facebook.com/upcfafablab/",
+      "machinesDesc": ""
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [120.59853, 16.417785]
+    },
+    "properties": {
+      "name": "DTI - SLU Fablab",
+      "website": "https://www.facebook.com/siribcenter/",
+      "machinesDesc": ""
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [120.534559, 15.192365]
+    },
+    "properties": {
+      "name": "Innovation Center - Philippine Science High School Central Luzon Campus",
+      "website": "",
+      "machinesDesc": ""
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [120.656522, 14.997938]
+    },
+    "properties": {
+      "name": "Don Honorio Ventura State U Fablab",
+      "website": "",
+      "machinesDesc": ""
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [120.992633, 14.567014]
+    },
+    "properties": {
+      "name": "Animo Labs",
+      "website": "https://www.facebook.com/animolabs/",
+      "machinesDesc": ""
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [121.250848, 14.16315]
+    },
+    "properties": {
+      "name": "SIBOL Lab",
+      "website": "",
+      "machinesDesc": ""
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [123.979304, 11.04575]
+    },
+    "properties": {
+      "name": "DigiFab - LGU Bogo",
+      "website": "https://www.facebook.com/Bogo-Digital-Fablab-and-ICT-Training-Center-2215722055335090/",
+      "machinesDesc": "Ultimaker 2"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [124.030249, 10.503328]
+    },
+    "properties": {
+      "name": "Fablab CTU Danao",
+      "website": "https://www.facebook.com/ctudanaofablab",
+      "machinesDesc": ""
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [123.600101, 9.882641]
+    },
+    "properties": {
+      "name": "FABLAB CTU Argao",
+      "website": "https://www.facebook.com/pages/category/Local-Business/Fablab-Argao-2292193277768965/",
+      "machinesDesc": ""
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [123.303811, 9.312406]
+    },
+    "properties": {
+      "name": "Fablab Negros",
+      "website": "https://www.facebook.com/FABLAB-Negros-126985075365692/",
+      "machinesDesc": ""
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [121.050398, 14.4867]
+    },
+    "properties": {
+      "name": "Advanced Manufacturing Center (AMCEN)",
+      "website": "http://amcen.dost.gov.ph/",
+      "machinesDesc": ""
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [123.422789, 8.656223]
+    },
+    "properties": {
+      "name": "Fablab Dapitan",
+      "website": "https://www.facebook.com/FablabDapitanPage/",
+      "machinesDesc": ""
+    }
+  }]
+}

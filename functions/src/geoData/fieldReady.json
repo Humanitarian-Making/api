@@ -1,0 +1,184 @@
+[
+    {
+      "name": "Robotics Association of Nepal",
+      "website": "www.ran.org.np",
+      "machines": "Raspberry Pi, Arduino, Drones, home-made CNC Plasma Cutter, robotics parts, design software",
+      "long": 27.67835,
+      "lat": 85.31532
+    },
+    {
+      "name": "Ignition Lab",
+      "website": "",
+      "machines": "Prusa i3 3D printer x 1,Prusa i3 Dual extruder 3D printer x 1,Electronics Bench,Container full of tools (currently in Boston on standby to Nepal), Power tools (drill press), Basic hand tools",
+      "long": 27.69458,
+      "lat": 85.31895
+    },
+    {
+      "name": "Maker Valley",
+      "website": "",
+      "machines": "Ender2 x1",
+      "long": 27.69458,
+      "lat": 85.31895
+    },
+    {
+      "name": "Microsoft Innovation Center Nepal",
+      "website": "micnepal.org",
+      "machines": "3D printer: Duplicator 6",
+      "long": 27.70259,
+      "lat": 85.31057
+    },
+    {
+      "name": "Endeavor Pvt. Ltd.",
+      "website": "endeavor.com.np",
+      "machines": "",
+      "long": 27.67475,
+      "lat": 85.31828
+    },
+    {
+      "name": "iHub",
+      "website": "http://www.fncci.org/innovation-hub-159.html",
+      "machines": "MakerBot Replicator 5th Gen, Laser Cutter, Drill press, Microsaw, Jigsaws, Hand tools, Robotics kit,MakerBot Replicator 5th Gen",
+      "long": 27.69432,
+      "lat": 85.30619
+    },
+    {
+      "name": "Satish Ji's Shack",
+      "website": "",
+      "machines": "CNC router ,Laser engraver, laser head ,Basic electronics tools, Advanced Radio equipment,3D printer - Hictop pursa i3",
+      "long": 27.70019,
+      "lat": 85.34907
+    },
+    {
+      "name": "Paaila Technology",
+      "website": "https://paailatechnology.com/",
+      "machines": "",
+      "long": 27.68063,
+      "lat": 85.3105
+    },
+    {
+      "name": "Karkhana",
+      "website": "www.karkhana.asia",
+      "machines": "Laser cutter, Welding machines,3D printer: Up Box Plus",
+      "long": 27.70893,
+      "lat": 85.33101
+    },
+    {
+      "name": "Field Ready",
+      "website": "www.fieldready.org",
+      "machines": "heat guns, power tools, plumbing tools, silicone moulding equipment, autoclave,4x 3D printers including 1x Tier Time 230x230x250mm print capacity UP Box, 1x UP Mini (140x140x140mm print capacity) and one medium print volume Dual Extruder printer. ( Up mini 2 )",
+      "long": 27.66737,
+      "lat": 85.32166
+    },
+    {
+      "name": "xEro3D Hubs",
+      "website": "",
+      "machines": "UPmini 2 Tiretime 3D Printer",
+      "long": 26.81194,
+      "lat": 87.25531
+    },
+    {
+      "name": "Rastriya Aviskar Kendra (NIC)",
+      "website": "www.nicnepal.org",
+      "machines": "Electronics Bench, Hand drills, drill press, Up Box + 3D Printer",
+      "long": 27.68648,
+      "lat": 85.31759
+    },
+    {
+      "name": "Center for Molecular Dynamics Nepal",
+      "website": "www.cmdn.org.np",
+      "machines": "Tevo Black Widow 3D printer x2,Tevo Tarantula Dual extruder 3D printer x1, Electronics bench, Hand tools for post production processes,Spare hardware for additional CNC",
+      "long": 27.69016,
+      "lat": 85.32107
+    },
+    {
+      "name": "Robotics Academy of Nepal",
+      "website": "-",
+      "machines": "Electronics bench: soldering iron, meters, wire strippers,Hand drills, drill press, grinder,Drones,Up Box +  3D Printer                                                     -Up +2 3D Printer",
+      "long": 27.68681,
+      "lat": 85.31766
+    },
+    {
+      "name": "Kathmandu University",
+      "website": "www.ku.edu.np",
+      "machines": "",
+      "long": 27.61961,
+      "lat": 85.53863
+    },
+    {
+      "name": "Pro-Mech Minds & Engineering Services Pvt. Ltd",
+      "website": "www.promechminds.com",
+      "machines": "Up Box + 3D printer",
+      "long": 27.68584,
+      "lat": 85.32154
+    },
+    {
+      "name": "Fuse Machines",
+      "website": "http://fusemachines.com.np",
+      "machines": "",
+      "long": 27.70966,
+      "lat": 85.32154
+    },
+    {
+      "name": "British School",
+      "website": "www.tbskathmandu.org",
+      "machines": "Quant 3D Printer ( Up +2 )",
+      "long": 27.68152,
+      "lat": 85.31152
+    },
+    {
+      "name": "Nepal Communitere",
+      "website": "nepal.communitere.org",
+      "machines": "http://www.appropedia.org/Nepal_Communitere_Maker_Space",
+      "long": 27.67834,
+      "lat": 85.31542
+    },
+    {
+      "name": "SOS Vocational Training Center",
+      "website": "http://lamton.org/institution/vocational/810-sos-vocational-training-centre-pokhara",
+      "machines": "Laser Cutter, Welding Machines,Carpentry tools, Power tools",
+      "long": 28.18664,
+      "lat": 83.95768
+    },
+    {
+      "name": "Supreme Light Technology",
+      "website": "www.sltech.com.np",
+      "machines": "Anycubic I3 MEGA",
+      "long": 27.6893,
+      "lat": 85.3083
+    },
+    {
+      "name": "Teaching Hospital",
+      "website": "-",
+      "machines": "AJ 3D Printer",
+      "long": 27.736,
+      "lat": 85.33026
+    },
+    {
+      "name": "Zener Technology",
+      "website": "zenertech.com",
+      "machines": "3D printer: Tier Time UP x2, Tier Time Mini2 x2, Tier Time UP Plus2 x1, Create Box Max x1,Power Tools: Hand drills, drill press, grinder, CNC machine, Sheet metal bender,Pressurized air sander",
+      "long": 27.68678,
+      "lat": 85.31765
+    },
+    {
+      "name": "Balaju School of Engineering and Technology (BSET)",
+      "website": "",
+      "machines": "UP Box+",
+      "long": 27.72994,
+      "lat": 85.30104
+    },
+    {
+      "name": "Pulchowk Engineering College",
+      "website": "ioe.edu.np",
+      "machines": "Laser cutter, lathe machine *3, milling machine, surface grinder, shaper welding, drill machines,3D printer - Jenny Printer",
+      "long": 27.68284,
+      "lat": 85.32
+    },
+    {
+      "name": "Tiny Bits Foundation",
+      "website": "",
+      "machines": "Ender2 x1",
+      "long": 27.77682,
+      "lat": 85.6949
+    }
+  ]

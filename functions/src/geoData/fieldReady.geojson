@@ -1,0 +1,290 @@
+{
+  "type": "FeatureCollection",
+  "features": [{
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.31532, 27.67835]
+    },
+    "properties": {
+      "name": "Robotics Association of Nepal",
+      "website": "www.ran.org.np",
+      "machinesDesc": "Raspberry Pi, Arduino, Drones, home-made CNC Plasma Cutter, robotics parts, design software"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.31895, 27.69458]
+    },
+    "properties": {
+      "name": "Ignition Lab",
+      "website": "",
+      "machinesDesc": "Prusa i3 3D printer x 1,Prusa i3 Dual extruder 3D printer x 1,Electronics Bench,Container full of tools (currently in Boston on standby to Nepal), Power tools (drill press), Basic hand tools"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.31895, 27.69458]
+    },
+    "properties": {
+      "name": "Maker Valley",
+      "website": "",
+      "machinesDesc": "Ender2 x1"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.31057, 27.70259]
+    },
+    "properties": {
+      "name": "Microsoft Innovation Center Nepal",
+      "website": "micnepal.org",
+      "machinesDesc": "3D printer: Duplicator 6"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.31828, 27.67475]
+    },
+    "properties": {
+      "name": "Endeavor Pvt. Ltd.",
+      "website": "endeavor.com.np",
+      "machinesDesc": ""
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.30619, 27.69432]
+    },
+    "properties": {
+      "name": "iHub",
+      "website": "http://www.fncci.org/innovation-hub-159.html",
+      "machinesDesc": "MakerBot Replicator 5th Gen, Laser Cutter, Drill press, Microsaw, Jigsaws, Hand tools, Robotics kit,MakerBot Replicator 5th Gen"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.34907, 27.70019]
+    },
+    "properties": {
+      "name": "Satish Ji's Shack",
+      "website": "",
+      "machinesDesc": "CNC router ,Laser engraver, laser head ,Basic electronics tools, Advanced Radio equipment,3D printer - Hictop pursa i3"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.3105, 27.68063]
+    },
+    "properties": {
+      "name": "Paaila Technology",
+      "website": "https://paailatechnology.com/",
+      "machinesDesc": ""
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.33101, 27.70893]
+    },
+    "properties": {
+      "name": "Karkhana",
+      "website": "www.karkhana.asia",
+      "machinesDesc": "Laser cutter, Welding machines,3D printer: Up Box Plus"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.32166, 27.66737]
+    },
+    "properties": {
+      "name": "Field Ready",
+      "website": "www.fieldready.org",
+      "machinesDesc": "heat guns, power tools, plumbing tools, silicone moulding equipment, autoclave,4x 3D printers including 1x Tier Time 230x230x250mm print capacity UP Box, 1x UP Mini (140x140x140mm print capacity) and one medium print volume Dual Extruder printer. ( Up mini 2 )"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [87.25531, 26.81194]
+    },
+    "properties": {
+      "name": "xEro3D Hubs",
+      "website": "",
+      "machinesDesc": "UPmini 2 Tiretime 3D Printer"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.31759, 27.68648]
+    },
+    "properties": {
+      "name": "Rastriya Aviskar Kendra (NIC)",
+      "website": "www.nicnepal.org",
+      "machinesDesc": "Electronics Bench, Hand drills, drill press, Up Box + 3D Printer"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.32107, 27.69016]
+    },
+    "properties": {
+      "name": "Center for Molecular Dynamics Nepal",
+      "website": "www.cmdn.org.np",
+      "machinesDesc": "Tevo Black Widow 3D printer x2,Tevo Tarantula Dual extruder 3D printer x1, Electronics bench, Hand tools for post production processes,Spare hardware for additional CNC"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.31766, 27.68681]
+    },
+    "properties": {
+      "name": "Robotics Academy of Nepal",
+      "website": "-",
+      "machinesDesc": "Electronics bench: soldering iron, meters, wire strippers,Hand drills, drill press, grinder,Drones,Up Box +  3D Printer                                                     -Up +2 3D Printer"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.53863, 27.61961]
+    },
+    "properties": {
+      "name": "Kathmandu University",
+      "website": "www.ku.edu.np",
+      "machinesDesc": ""
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.32154, 27.68584]
+    },
+    "properties": {
+      "name": "Pro-Mech Minds & Engineering Services Pvt. Ltd",
+      "website": "www.promechminds.com",
+      "machinesDesc": "Up Box + 3D printer"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.32154, 27.70966]
+    },
+    "properties": {
+      "name": "Fuse Machines",
+      "website": "http://fusemachines.com.np",
+      "machinesDesc": ""
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.31152, 27.68152]
+    },
+    "properties": {
+      "name": "British School",
+      "website": "www.tbskathmandu.org",
+      "machinesDesc": "Quant 3D Printer ( Up +2 )"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.31542, 27.67834]
+    },
+    "properties": {
+      "name": "Nepal Communitere",
+      "website": "nepal.communitere.org",
+      "machinesDesc": "http://www.appropedia.org/Nepal_Communitere_Maker_Space"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [83.95768, 28.18664]
+    },
+    "properties": {
+      "name": "SOS Vocational Training Center",
+      "website": "http://lamton.org/institution/vocational/810-sos-vocational-training-centre-pokhara",
+      "machinesDesc": "Laser Cutter, Welding Machines,Carpentry tools, Power tools"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.3083, 27.6893]
+    },
+    "properties": {
+      "name": "Supreme Light Technology",
+      "website": "www.sltech.com.np",
+      "machinesDesc": "Anycubic I3 MEGA"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.33026, 27.736]
+    },
+    "properties": {
+      "name": "Teaching Hospital",
+      "website": "-",
+      "machinesDesc": "AJ 3D Printer"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.31765, 27.68678]
+    },
+    "properties": {
+      "name": "Zener Technology",
+      "website": "zenertech.com",
+      "machinesDesc": "3D printer: Tier Time UP x2, Tier Time Mini2 x2, Tier Time UP Plus2 x1, Create Box Max x1,Power Tools: Hand drills, drill press, grinder, CNC machine, Sheet metal bender,Pressurized air sander"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.30104, 27.72994]
+    },
+    "properties": {
+      "name": "Balaju School of Engineering and Technology (BSET)",
+      "website": "",
+      "machinesDesc": "UP Box+"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.32, 27.68284]
+    },
+    "properties": {
+      "name": "Pulchowk Engineering College",
+      "website": "ioe.edu.np",
+      "machinesDesc": "Laser cutter, lathe machine *3, milling machine, surface grinder, shaper welding, drill machines,3D printer - Jenny Printer"
+    }
+  }, {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [85.6949, 27.77682]
+    },
+    "properties": {
+      "name": "Tiny Bits Foundation",
+      "website": "",
+      "machinesDesc": "Ender2 x1"
+    }
+  }]
+}
