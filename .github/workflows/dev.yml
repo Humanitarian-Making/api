@@ -20,6 +20,6 @@ jobs:
       - name: Deploy angular app to Firebase
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only functions --project default
+          args: deploy --only functions --project default 
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
