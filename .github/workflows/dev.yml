@@ -14,9 +14,9 @@ jobs:
         with:
           node-version: '10.10'
       - name: Install Dependencies
-        run: npm install
+        run: 
       - name: Build
-        run: cd functions && npm run build
+        run: cd functions && npm install &&  npm run build
       - name: Deploy angular app to Firebase
         uses: w9jds/firebase-action@master
         with:
