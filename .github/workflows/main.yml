@@ -1,7 +1,7 @@
-name: Build and Deploy to Production
+name: Build and Deploy to Dev
 on:
   push:
-    branches: [ dev ]
+    branches: [ master ]
 jobs:
   build:
     name: Build
@@ -13,6 +13,8 @@ jobs:
         uses: actions/setup-node@master
         with:
           node-version: '10.10'
+      - name: Change Directory
+        run: cd functions
       - name: Install Dependencies
         run: npm install
       - name: Build
@@ -20,6 +22,6 @@ jobs:
       - name: Deploy angular app to Firebase
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only functions --project prod
+          args: deploy --only functions --project default 
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
