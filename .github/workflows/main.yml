@@ -1,4 +1,4 @@
-name: Build and Deploy to Dev
+name: Deploy API to Production
 on:
   push:
     branches: [ master ]
