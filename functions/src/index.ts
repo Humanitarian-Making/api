@@ -19,7 +19,7 @@ const dbName = config.db.name;
 console.log('dbName :', dbName);
 const dbUser = config.db.user;
 console.log('dbUser :', dbUser);
-const dbPassword = encodeURIComponent(config.db.password);
+const dbPassword = encodeURIComponent(config.db.password); 
 
 export async function connectDb (): Promise<Db> {
     const uri = `mongodb+srv://${dbUser}:${dbPassword}@${dbUrl}/test?retryWrites=true&w=majority`;
@@ -30,7 +30,7 @@ export async function connectDb (): Promise<Db> {
     } else {
         return client.connect()
         .then((db1) => {
-            console.log(`Connected to ${dbName} with User: ${dbUser}`);
+            console.log(`Connected to ${dbUrl}/${dbName} with User: ${dbUser}`);
             cachedDb = db1.db(dbName);
             return cachedDb;
         })
