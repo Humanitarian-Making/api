@@ -80,6 +80,9 @@ export class Project {
                             "imageUrl" : { 
                                 "$first" : "$imageUrl"
                             }, 
+                            "projectUrl" : { 
+                                "$first" : "$projectUrl"
+                            },
                             "published" : { 
                                 "$first" : "$published"
                             }
@@ -102,7 +105,8 @@ export class Project {
                             "updated" : 1.0, 
                             "updatedBy" : 1.0, 
                             "desc" : 1.0, 
-                            "imageUrl" : 1.0, 
+                            "imageUrl" : 1.0,
+                            "projectUrl" : 1.0,  
                             "published" : 1.0
                         }
                     }, 
@@ -220,7 +224,7 @@ export class Project {
                             }
                         });
                         const updated = await mongoDb.collection(projectCollection).updateOne({_id: new ObjectId(projectId)}, {
-                            name: nameUpdate, 
+                            name: nameUpdate,
                             updatedDate: new Date(), 
                             updatedBy: new ObjectId(userId)
                         })
