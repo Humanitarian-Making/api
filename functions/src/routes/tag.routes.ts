@@ -174,4 +174,4 @@ routes.put('/tag/:tagId/edit/selectable', [auth.authenticate], async (req: Authe
     }
 });
 
-export const projectRoutes = routes;
+export const tagRoutes = routes;
