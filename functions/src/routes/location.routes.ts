@@ -8,7 +8,8 @@ const location = new Location()
 routes.get('/location/nearby', async (req: AuthenticatedReq, res) => {
     try {
         const currentLocation = req.body.currentLocation;
-        const result = await location.queryNearby(currentLocation);
+        const distance = req.body.distance;
+        const result = await location.queryNearby(currentLocation, distance);
         if (result) {
             res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
         }
