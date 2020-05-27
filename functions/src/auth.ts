@@ -4,12 +4,9 @@ import { ObjectId } from 'mongodb';
 import { Utils } from './utils';
 import { UserRoleObj } from './interfaces';
 import { userClass } from './user';
+import { collection } from './db/collections';
 
 const utils = new Utils();
-const userCollection = 'users';
-const userGroupCollection = 'user-groups';
-const userGroupUserCollection = 'user-group-users';
-const actionRolesCollection = 'action-roles';
 
 function validateHeaders(req) {
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer ')){
@@ -79,8 +76,8 @@ export class Auth {
     async getUserGroupRole(userId, userGroupId): Promise<string> {
         try {
             const mongoDb = await connectDb();
-            const userGroup = await mongoDb.collection(userGroupCollection).findOne({_id: new ObjectId(userGroupId)});
-            const userGroupUser = await mongoDb.collection(userGroupUserCollection).findOne({userGroup: new ObjectId(userGroupId), user: new ObjectId(userId)});
+            const userGroup = await mongoDb.collection(collection.userGroups).findOne({_id: new ObjectId(userGroupId)});
+            const userGroupUser = await mongoDb.collection(collection.userGroupUsers).findOne({userGroup: new ObjectId(userGroupId), user: new ObjectId(userId)});
             console.log(userGroup, userGroupUser)
             if (userGroupUser && userGroup) {
                 return userGroupUser.role;
@@ -102,7 +99,7 @@ export class Auth {
             console.log(`User.actionUserRoleAuthorised ${resource}, ${action}, ${uid}}`);
             const mongoDb = await connectDb();
             const userId = await userClass.getUserIdFromUid(uid);
-            const user = await mongoDb.collection(userCollection).findOne({_id: userId})
+            const user = await mongoDb.collection(collection.users).findOne({_id: userId})
             if (user) {
                 const roles = user.roles
                 const highestUserRole = this.getHighestUserRole(roles);
@@ -124,7 +121,7 @@ export class Auth {
     async userGroupRoleAuthorised(resource, action, userId, userGroupId): Promise<{authorised: boolean, requiredRoles?: string[], message?: string}> {
         try {
             const mongoDb = await connectDb();
-            const userGroupRoles = await mongoDb.collection(actionRolesCollection).findOne({type: resource});
+            const userGroupRoles = await mongoDb.collection(collection.actionRoles).findOne({type: resource});
             const requiredUserGroupRoles = userGroupRoles[action];
             const userGroupRole = await this.getUserGroupRole(userId, userGroupId);
             if (userGroupRole && requiredUserGroupRoles) {
@@ -156,7 +153,7 @@ export class Auth {
     async getAuthActionsList(userRole: string, resource: string): Promise<any> {
         try {
             const mongoDb = await connectDb();
-            const actionRoles = await mongoDb.collection(actionRolesCollection).findOne({type: resource});
+            const actionRoles = await mongoDb.collection(collection.actionRoles).findOne({type: resource});
             if(actionRoles) {
                 const actionList = {}
                 for(const action in actionRoles) {

@@ -83,4 +83,3 @@ export const api = functions.https.onRequest(main);
 exports.createUser = functions.auth.user().onCreate((user) => {
     return userClass.createNew(user);
 });
-

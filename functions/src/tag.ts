@@ -4,8 +4,8 @@ import { Auth } from './auth';
 import { UserGroup } from './userGroup';
 import { ObjectId } from 'mongodb';
 import { tagActions, userGroupActions } from './roles';
+import { collection } from './db/collections';
 
-const tagCollection = 'tags';
 const auth = new Auth();
 const userGroup = new UserGroup();
 
@@ -29,7 +29,7 @@ export class Tag {
                         updatedDate: new Date(),
                         updatedBy: new ObjectId(userId)
                     }
-                    const createdTag = await mongoDb.collection(tagCollection).insertOne(newTag);
+                    const createdTag = await mongoDb.collection(collection.tags).insertOne(newTag);
                     if(createdTag && createdTag.insertedId) {
                         const createdTagId = createdTag.insertedId;
                         console.log('Created: ', createdTag);
@@ -53,7 +53,7 @@ export class Tag {
     async create(userId: string, tag: CreateTagObject): Promise<CreateTagRes> {
         try {
             const mongoDb = await connectDb();
-            const parent = await mongoDb.collection(tagCollection).findOne({ _id: new ObjectId(tag.parentId) });
+            const parent = await mongoDb.collection(collection.tags).findOne({ _id: new ObjectId(tag.parentId) });
             if(parent){
                 console.log('Tag.create: userId: ', userId, ' tag: ', tag, parent);
                 const authorised = await auth.authorised('tag', tagActions.canCreateChildTag, userId, parent.userGroupId);
@@ -71,7 +71,7 @@ export class Tag {
                             updatedDate: new Date(),
                             updatedBy: new ObjectId(userId)
                         }
-                        const createdTag = await mongoDb.collection(tagCollection).insertOne(newTag)
+                        const createdTag = await mongoDb.collection(collection.tags).insertOne(newTag)
                         console.log('createdTag: ', createdTag)
                         if(createdTag && createdTag.insertedId) {
                             const createdTagId = createdTag.insertedId;
@@ -86,7 +86,7 @@ export class Tag {
                             }
                             
                             console.log('parentUpdate: ', parentUpdate);
-                            const updatedParent = await mongoDb.collection(tagCollection).updateOne(
+                            const updatedParent = await mongoDb.collection(collection.tags).updateOne(
                                 { _id: new ObjectId(tag.parentId) }, 
                                 parentUpdate);
                             if(updatedParent){
@@ -121,7 +121,7 @@ export class Tag {
     async getBatch(tagId: string): Promise<TagRes> {
         try {
             const mongoDb = await connectDb();
-            const tag = await mongoDb.collection(tagCollection).findOne({_id: new ObjectId(tagId)});
+            const tag = await mongoDb.collection(collection.tags).findOne({_id: new ObjectId(tagId)});
             if(tag) {
                 return {success: true, tag: tag};
             } else {
@@ -136,7 +136,7 @@ export class Tag {
     async get(tagId: string): Promise<TagRes> {
         try {
             const mongoDb = await connectDb();
-            const tag = await mongoDb.collection(tagCollection).aggregate(
+            const tag = await mongoDb.collection(collection.tags).aggregate(
                 [
                     { 
                         "$match" : { 
@@ -221,7 +221,7 @@ export class Tag {
     async getRootTags(): Promise<TagsRes> {
         try {
             const mongoDb = await connectDb();
-            const tags = await mongoDb.collection(tagCollection).find({parent : null}, {projection: { 'name': 1, 'desc': 1}}).toArray();
+            const tags = await mongoDb.collection(collection.tags).find({parent : null}, {projection: { 'name': 1, 'desc': 1}}).toArray();
             if(tags) {
                 return {success: true, tags: tags};
             } else {
@@ -236,7 +236,7 @@ export class Tag {
     async getParentTags(): Promise<TagsRes> {
         try {
             const mongoDb = await connectDb();
-            const tags = await mongoDb.collection(tagCollection).aggregate(
+            const tags = await mongoDb.collection(collection.tags).aggregate(
                 [
                     { 
                         "$match" : { 
@@ -278,7 +278,7 @@ export class Tag {
     async getChildren(tagId): Promise<TagsRes> {
         try {
             const mongoDb = await connectDb();
-            const tags = await mongoDb.collection(tagCollection).find({parent : new ObjectId(tagId)}, {projection: { 'name': 1, 'desc': 1}}).toArray();
+            const tags = await mongoDb.collection(collection.tags).find({parent : new ObjectId(tagId)}, {projection: { 'name': 1, 'desc': 1}}).toArray();
             if(tags) {
                 return {success: true, tags: tags};
             } else {
@@ -293,7 +293,7 @@ export class Tag {
     async getTagsOfType(tagType): Promise<TagsRes> {
         try {
             const mongoDb = await connectDb();
-            const tags = await mongoDb.collection(tagCollection).aggregate(
+            const tags = await mongoDb.collection(collection.tags).aggregate(
                 [
                     { 
                         "$match" : { 
@@ -365,7 +365,7 @@ export class Tag {
     async editName(userId, tagId, names:LanguageOption[]): Promise<TagUpdateResponse> {
         try {
             const mongoDb = await connectDb();
-            const tag: any = await mongoDb.collection(tagCollection).findOne({_id: new ObjectId(tagId)}); 
+            const tag: any = await mongoDb.collection(collection.tags).findOne({_id: new ObjectId(tagId)}); 
             if(tag) {
                 const tagUserGroupId = tag.userGroupId;
                 const authorised = await auth.authorised('tag', tagActions.canEditName, userId, tagUserGroupId);
@@ -377,7 +377,7 @@ export class Tag {
                                 nameUpdate.push(name)
                             }
                         });
-                        const updated = await mongoDb.collection(tagCollection).updateOne({_id: new ObjectId(tagId)}, {
+                        const updated = await mongoDb.collection(collection.tags).updateOne({_id: new ObjectId(tagId)}, {
                             $set: {
                                 name: nameUpdate, 
                                 updatedDate: new Date(), 
@@ -407,7 +407,7 @@ export class Tag {
     async editDesc(userId, tagId, descs): Promise<TagUpdateResponse> {
         try {
             const mongoDb = await connectDb();
-            const tag: any = await mongoDb.collection(tagCollection).findOne({_id: new ObjectId(tagId)}); 
+            const tag: any = await mongoDb.collection(collection.tags).findOne({_id: new ObjectId(tagId)}); 
             if(tag) {
                 const tagUserGroupId = tag.userGroupId;
                 const authorised = await auth.authorised('tag', tagActions.canEditDesc, userId, tagUserGroupId);
@@ -419,7 +419,7 @@ export class Tag {
                                 descUpdate.push(desc)
                             }
                         });
-                        const updated = await mongoDb.collection(tagCollection).updateOne({_id: new ObjectId(tagId)}, {
+                        const updated = await mongoDb.collection(collection.tags).updateOne({_id: new ObjectId(tagId)}, {
                             desc: descUpdate, 
                             updatedDate: new Date(), 
                             updatedBy: new ObjectId(userId)
@@ -447,14 +447,14 @@ export class Tag {
     async editUserGroup(userId, tagId, newUserGroupId): Promise<StandardResponse> {
         try {
             const mongoDb = await connectDb();
-            const tag: any = await mongoDb.collection(tagCollection).findOne({_id: new ObjectId(tagId)}); 
+            const tag: any = await mongoDb.collection(collection.tags).findOne({_id: new ObjectId(tagId)}); 
             if(tag) {
                 const tagUserGroupId = tag.userGroupId;
                 const currentUserGroupAuthorised = await auth.authorised('tag', tagActions.canChangeUserGroup, userId, tagUserGroupId);
                 const newUserGroupAuthorised = await auth.authorised('tag', tagActions.canChangeUserGroup, userId, newUserGroupId);
                 if(currentUserGroupAuthorised && newUserGroupAuthorised) {
                     if(currentUserGroupAuthorised.authorised && newUserGroupAuthorised.authorised) {
-                        const updated = await mongoDb.collection(tagCollection).updateOne({_id: new ObjectId(tagId)}, {
+                        const updated = await mongoDb.collection(collection.tags).updateOne({_id: new ObjectId(tagId)}, {
                             userGroupId: new ObjectId(newUserGroupId), 
                             updatedDate: new Date(), 
                             updatedBy: new ObjectId(userId)
@@ -482,13 +482,13 @@ export class Tag {
     async editSelectable(userId, tagId, selectable): Promise<StandardResponse> {
         try {
             const mongoDb = await connectDb();
-            const tag: any = await mongoDb.collection(tagCollection).findOne({_id: new ObjectId(tagId)}); 
+            const tag: any = await mongoDb.collection(collection.tags).findOne({_id: new ObjectId(tagId)}); 
             if(tag) {
                 const tagUserGroupId = tag.userGroupId;
                 const tagUserGroupAuthorised = await auth.authorised('tag', tagActions.canEditSelectable, userId, tagUserGroupId);
                 if(tagUserGroupAuthorised) {
                     if(tagUserGroupAuthorised.authorised) {
-                        const updated = await mongoDb.collection(tagCollection).updateOne({_id: new ObjectId(tagId)}, {
+                        const updated = await mongoDb.collection(collection.tags).updateOne({_id: new ObjectId(tagId)}, {
                             $set: {
                                 selectable: selectable, 
                                 updatedDate: new Date(), 

@@ -1,3 +1,4 @@
+import { collection } from './db/collections';
 import { error, connectDb } from './index';
 import { ObjectId } from 'mongodb';
 import { Utils } from './utils';
@@ -7,14 +8,6 @@ import { userGroupActions } from './roles';
 
 const utils = new Utils();
 const auth = new Auth();
-
-const userGroupCollection = 'user-groups';
-const userGroupUserCollection = 'user-group-users';
-const actionRolesCollection = 'action-roles';
-const tagCollection = 'tags';
-const projectCollection = 'projects';
-const locationCollection = 'locations';
-const resourceCollection = 'resources';
 
 export class UserGroup {
     async getAll(uid): Promise<{ success: boolean, userGroups?:[], message?:string}> {
@@ -41,11 +34,11 @@ export class UserGroup {
     async get(userGroupId): Promise<UserGroupRes> {
         try {
             const mongoDb = await connectDb();
-            const userGroupDoc = await mongoDb.collection(userGroupCollection).findOne({_id: new ObjectId(userGroupId)});
-            const users = await mongoDb.collection(userGroupUserCollection).find({userGroup: new ObjectId(userGroupId)}).toArray(); 
-            const projects = await mongoDb.collection(projectCollection).find({userGroupId: new ObjectId(userGroupId)}).toArray(); 
-            const locations = await mongoDb.collection(locationCollection).find({userGroupId: new ObjectId(userGroupId)}).toArray();
-            const resources = await mongoDb.collection(resourceCollection).find({userGroupId: new ObjectId(userGroupId)}).toArray();
+            const userGroupDoc = await mongoDb.collection(collection.userGroups).findOne({_id: new ObjectId(userGroupId)});
+            const users = await mongoDb.collection(collection.userGroupUsers).find({userGroup: new ObjectId(userGroupId)}).toArray(); 
+            const projects = await mongoDb.collection(collection.projects).find({userGroupId: new ObjectId(userGroupId)}).toArray(); 
+            const locations = await mongoDb.collection(collection.locations).find({userGroupId: new ObjectId(userGroupId)}).toArray();
+            const resources = await mongoDb.collection(collection.resources).find({userGroupId: new ObjectId(userGroupId)}).toArray();
             if (userGroupDoc) {
                 const userGroup = {
                     ... userGroupDoc, 
@@ -123,7 +116,7 @@ export class UserGroup {
         const authorised = await auth.authorised('user-group', userGroupActions.canViewTags, userId, userGroupId);
         if(authorised) {
             if(authorised.authorised) {
-                const tags = await mongoDb.collection(tagCollection).find({}).toArray();
+                const tags = await mongoDb.collection(collection.tags).find({}).toArray();
                 if (tags) {
                     return { success: true, tags}; ;
                 } else {
@@ -164,8 +157,8 @@ export class UserGroup {
             console.log('userId: ', userId)
             console.log('userGroupId: ', userGroupId)
             const mongoDb = await connectDb();
-            const userGroup = await mongoDb.collection(userGroupCollection).findOne({_id: new ObjectId(userGroupId)});
-            const userGroupUser = await mongoDb.collection(userGroupUserCollection).findOne({userGroup: new ObjectId(userGroupId), user: new ObjectId(userId)});
+            const userGroup = await mongoDb.collection(collection.userGroups).findOne({_id: new ObjectId(userGroupId)});
+            const userGroupUser = await mongoDb.collection(collection.userGroupUsers).findOne({userGroup: new ObjectId(userGroupId), user: new ObjectId(userId)});
             console.log('userGroupUser: ', userGroupUser)
             console.log('userGroup: ', userGroup)
             if (userGroupUser && userGroup) {
@@ -187,7 +180,7 @@ export class UserGroup {
     async actionUserGroupRoleAuthorised(resource, action, userId, userGroupId): Promise<{authorised: boolean, requiredRoles?: string[], message?: string}> {
         try {
             const mongoDb = await connectDb();
-            const userGroupRoles = await mongoDb.collection(actionRolesCollection).findOne({type: resource});
+            const userGroupRoles = await mongoDb.collection(collection.actionRoles).findOne({type: resource});
             const requiredUserGroupRoles = userGroupRoles[action];
             const userGroupRole = await this.getUserGroupRole(userId, userGroupId);
             const authorised = utils.isRoleInRolesRequired(userGroupRole, requiredUserGroupRoles);
