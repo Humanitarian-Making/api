@@ -4,12 +4,13 @@ import * as express from 'express';
 import * as cors from 'cors';
 import { AuthenticatedReq, CreateTagObject, LanguageOption } from './interfaces';
 import { Tag } from './tag';
-import { Project } from './project';
 import { userClass } from './user';
 import { UserGroup } from './userGroup';
 import { ErrorLog } from './error';
+import { Auth } from './auth';
 import { MongoClient, Db } from 'mongodb';
 import { locationRoutes } from './routes/location.routes';
+import { projectRoutes } from './routes/project.routes'
 
 let cachedDb = null;
 
@@ -46,6 +47,7 @@ export const mongo: Promise<Db> = connectDb()
 
 admin.initializeApp();
 
+const auth = new Auth();
 export const error = new ErrorLog(true);
 
 //initialize express server
@@ -64,37 +66,16 @@ main.use(express.urlencoded());
 //initialize the database and the collection 
 
 const tagClass = new Tag();
-const projectClass = new Project();
+
 const userGroupClass = new UserGroup();
 
 
-export function authenticate (req, res, next) {
-    const authToken = validateHeaders(req);
-    if (!authToken) {
-        return res.status(403).send('Unauthorized: Missing auth token')
-    }
-    decodeAuthToken(authToken)
-        .then((decodedToken) => { 
-            console.log('decodedToken: ', decodedToken)
-            console.log('decodedToken.uid :', decodedToken.uid);
-
-            userClass.getUserFromUid(decodedToken.uid).then(user => {
-                req.user = user;
-                next();
-            }).catch((err) => {
-                console.log('failed getUserFromUid')
-            })
-        })
-        .catch((err) => {
-            console.log('Token: Invalid', err);
-            res.status(403).send('Unauthorized')
-        });
-}
 
 // locations routes
 app.use(locationRoutes);
+app.use(projectRoutes);
 
-app.post('/test', authenticate, async (req: AuthenticatedReq, res) => {
+app.post('/test', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const result = userId //await auth.authorised('project', 'canEdit', userId);
@@ -108,7 +89,7 @@ app.post('/test', authenticate, async (req: AuthenticatedReq, res) => {
 });
 
 
-app.get('/user-groups', authenticate, async (req: AuthenticatedReq, res) => {
+app.get('/user-groups', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const result = await userGroupClass.getAll(userId);
@@ -121,7 +102,7 @@ app.get('/user-groups', authenticate, async (req: AuthenticatedReq, res) => {
     }
 });
 
-app.post('/user-group/create', authenticate, async (req: AuthenticatedReq, res) => {
+app.post('/user-group/create', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const result = await userGroupClass.create(userId);
@@ -147,7 +128,7 @@ app.get('/user-group/:userGroupId', async (req: AuthenticatedReq, res) => {
     }
 });
 
-app.post('/user-group/:userGroupId/user/add', authenticate, async (req: AuthenticatedReq, res) => {
+app.post('/user-group/:userGroupId/user/add', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         if (req.user) {
             const userId = req.user._id;
@@ -166,7 +147,7 @@ app.post('/user-group/:userGroupId/user/add', authenticate, async (req: Authenti
     }
 });
 
-app.put('/user-group/:userGroupId/user/remove', authenticate, async (req: AuthenticatedReq, res) => {
+app.put('/user-group/:userGroupId/user/remove', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const user = req.body.user;
@@ -180,7 +161,7 @@ app.put('/user-group/:userGroupId/user/remove', authenticate, async (req: Authen
     }
 });
 
-app.put('/user-group/:userGroupId/user/leave', authenticate, async (req: AuthenticatedReq, res) => {
+app.put('/user-group/:userGroupId/user/leave', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const result = await userGroupClass.leave(userId);
@@ -193,7 +174,7 @@ app.put('/user-group/:userGroupId/user/leave', authenticate, async (req: Authent
     }
 });
 
-app.post('/user-group/:userGroupId/request/join', authenticate, async (req: AuthenticatedReq, res) => {
+app.post('/user-group/:userGroupId/request/join', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const result = await userGroupClass.requestJoin(userId);
@@ -206,7 +187,7 @@ app.post('/user-group/:userGroupId/request/join', authenticate, async (req: Auth
     }
 });
 
-app.put('/user-group/:userGroupId/request/:requestId', authenticate, async (req: AuthenticatedReq, res) => {
+app.put('/user-group/:userGroupId/request/:requestId', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const requestId = req.params.requestId
@@ -220,7 +201,7 @@ app.put('/user-group/:userGroupId/request/:requestId', authenticate, async (req:
     }
 });
 
-app.get('/user-group/:userGroupId/tags', authenticate, async (req: AuthenticatedReq, res) => {
+app.get('/user-group/:userGroupId/tags', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const userGroupId = req.params.userGroupId;
@@ -234,7 +215,7 @@ app.get('/user-group/:userGroupId/tags', authenticate, async (req: Authenticated
     }
 });
 
-app.get('/user-group/:userGroupId/projects', authenticate, async (req: AuthenticatedReq, res) => {
+app.get('/user-group/:userGroupId/projects', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const result = await userGroupClass.projects(userId);
@@ -247,7 +228,7 @@ app.get('/user-group/:userGroupId/projects', authenticate, async (req: Authentic
     }
 });
 
-app.get('/user-group/:userGroupId/resources', authenticate, async (req: AuthenticatedReq, res) => {
+app.get('/user-group/:userGroupId/resources', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const result = await userGroupClass.resources(userId);
@@ -260,7 +241,7 @@ app.get('/user-group/:userGroupId/resources', authenticate, async (req: Authenti
     }
 });
 
-app.post('/tag/createRoot', authenticate, async (req: AuthenticatedReq, res) => {
+app.post('/tag/createRoot', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         console.log(req.body);
@@ -275,7 +256,7 @@ app.post('/tag/createRoot', authenticate, async (req: AuthenticatedReq, res) => 
     }
 });
 
-app.post('/tag/create', authenticate, async (req: AuthenticatedReq, res) => {
+app.post('/tag/create', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const tag: CreateTagObject = req.body.tag;
@@ -353,7 +334,7 @@ app.get('/tag/:tagId/children', async (req: AuthenticatedReq, res) => {
 });
 
 
-app.get('/tag/:tagId/edit', authenticate, async (req: AuthenticatedReq, res) => {
+app.get('/tag/:tagId/edit', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const tagId = req.params.tagId;
@@ -367,7 +348,7 @@ app.get('/tag/:tagId/edit', authenticate, async (req: AuthenticatedReq, res) => 
     }
 });
 
-app.put('/tag/:tagId/edit/name', authenticate, async (req: AuthenticatedReq, res) => {
+app.put('/tag/:tagId/edit/name', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const tagId = req.params.tagId;
@@ -382,7 +363,7 @@ app.put('/tag/:tagId/edit/name', authenticate, async (req: AuthenticatedReq, res
     }
 });
 
-app.put('/tag/:tagId/edit/desc', authenticate, async (req: AuthenticatedReq, res) => {
+app.put('/tag/:tagId/edit/desc', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const tagId = req.params.tagId;
@@ -397,7 +378,7 @@ app.put('/tag/:tagId/edit/desc', authenticate, async (req: AuthenticatedReq, res
     }
 });
 
-app.put('/tag/:tagId/edit/userGroup', authenticate, async (req: AuthenticatedReq, res) => {
+app.put('/tag/:tagId/edit/userGroup', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const tagId = req.params.tagId;
@@ -412,7 +393,7 @@ app.put('/tag/:tagId/edit/userGroup', authenticate, async (req: AuthenticatedReq
     }
 });
 
-app.put('/tag/:tagId/edit/selectable', authenticate, async (req: AuthenticatedReq, res) => {
+app.put('/tag/:tagId/edit/selectable', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const tagId = req.params.tagId;
@@ -427,191 +408,7 @@ app.put('/tag/:tagId/edit/selectable', authenticate, async (req: AuthenticatedRe
     }
 });
 
-app.get('/projects', async (req: AuthenticatedReq, res) => {
-    try {
-        const result = await projectClass.getAll();
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        } 
-    } catch (error) {
-        console.error(error)
-        res.status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.put('/projects/filter', async (req: AuthenticatedReq, res) => {
-    try {
-        const tags = req.body.tags
-        const result = await projectClass.filterByTags(tags);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        } 
-    } catch (error) {
-        console.error(error)
-        res.status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.get('/project/:projectId', async (req: AuthenticatedReq, res) => {
-    try {
-        const projectId = req.params.projectId;
-        const result = await projectClass.get(projectId);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        }
-    } catch (error) {
-        console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.get('/project/:projectId/edit', authenticate, async (req: AuthenticatedReq, res) => {
-    try {
-        console.log('/project/:projectId/edit: ', req.params.projectId, req.user._id);
-        const userId = req.user._id;
-        const projectId = req.params.projectId;
-        const result = await projectClass.getEditable(userId, projectId);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        }
-    } catch (error) {
-        console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.put('/project/:projectId/edit/name', authenticate, async (req: AuthenticatedReq, res) => {
-    try {
-        console.log('/project/:projectId/edit: ', req.params.projectId, req.user._id);
-        const userId = req.user._id;
-        const projectId = req.params.projectId;
-        const name = req.body.name;
-        const result = await projectClass.editName(userId, projectId, name);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        }
-    } catch (error) {
-        console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.put('/project/:projectId/edit/desc', authenticate, async (req: AuthenticatedReq, res) => {
-    try {
-        console.log('/project/:projectId/edit: ', req.params.projectId, req.user._id);
-        const userId = req.user._id;
-        const projectId = req.params.projectId;
-        const desc = req.body.desc;
-        const result = await projectClass.editDesc(userId, projectId, desc);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        }
-    } catch (error) {
-        console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.put('/project/:projectId/edit/published', authenticate, async (req: AuthenticatedReq, res) => {
-    try {
-        console.log('/project/:projectId/edit: ', req.params.projectId, req.user._id);
-        const userId = req.user._id;
-        const projectId = req.params.projectId;
-        const desc = req.body.desc;
-        const result = await projectClass.editDesc(userId, projectId, desc);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        }
-    } catch (error) {
-        console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.put('/project/:projectId/edit/userGroup', authenticate, async (req: AuthenticatedReq, res) => {
-    try {
-        console.log('/project/:projectId/edit/userGroup: ', req.params.projectId, req.user._id);
-        const userId = req.user._id;
-        const projectId = req.params.projectId;
-        const newUserGroupId = req.body.userGroupId;
-        const result = await projectClass.editUserGroup(userId, projectId, newUserGroupId);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        }
-    } catch (error) {
-        console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.put('/project/:projectId/tag/:tagId/add', authenticate, async (req: AuthenticatedReq, res) => {
-    try {
-        console.log('/project/{projectId}/tag/:tagId/add: ', req.params, req.user._id);
-        console.log('req.params :', req.params);
-        const userId = req.user._id;
-        const tagId = req.params.tagId;
-        const projectId = req.params.projectId;
-        console.log('/project/{projectId}/addTag: ', userId, tagId, userId);
-        const addTagToProjectRes = await projectClass.addTag(projectId, tagId, userId);
-        if (addTagToProjectRes) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(addTagToProjectRes);
-        }
-    } catch (error) {
-        console.error(error)
-        res.status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.put('/project/:projectId/tag/:tagId/remove', authenticate, async (req: AuthenticatedReq, res) => {
-    try {
-        console.log('/project/:projectId/:tagId/remove: ', req.params, req.user._id);
-        const userId = req.user._id;
-        const tagId = req.params.tagId;
-        const projectId = req.params.projectId;
-        console.log('removeTag: ', userId, tagId, userId);
-        const result = await projectClass.removeTag(projectId, tagId, userId);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        }
-    } catch (error) {
-        console.error(error)
-        res.status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.put('/project/:projectId/tags/reorder', authenticate, async (req: AuthenticatedReq, res) => {
-    try {
-        console.log('/project/:projectId/tags/reorder: ', req.body, req.user._id);
-        const userId = req.user._id;
-        const tags = req.body.tags;
-        const projectId = req.params.projectId;
-        console.log('removeTag: ', userId, tags, userId);
-        const result = await projectClass.reorderTags(projectId, tags, userId);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        }
-    } catch (error) {
-        console.error(error)
-        res.status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.get('/projects/sync', async (req: AuthenticatedReq, res) => {
-    try {
-        console.log('/projects/sync')
-        const synced =  await projectClass.updateAll();
-        if (synced) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(synced);
-        } else {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send(synced);
-        }
-    } catch (error) {
-        console.error(error)
-        res.status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.get('/users', authenticate, async (req: AuthenticatedReq, res) => {
+app.get('/users', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const result = await userClass.getAll(userId);
@@ -624,7 +421,7 @@ app.get('/users', authenticate, async (req: AuthenticatedReq, res) => {
     }
 });
 
-app.get('/user/profile', authenticate, async (req: AuthenticatedReq, res) => {
+app.get('/user/profile', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         if(req.user) {
             console.log('req.user :', req.user);
@@ -643,7 +440,7 @@ app.get('/user/profile', authenticate, async (req: AuthenticatedReq, res) => {
     }
 });
 
-app.get('/user/user-groups', authenticate, async (req: AuthenticatedReq, res) => {
+app.get('/user/user-groups', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         console.log('req.query: ', req);
@@ -658,7 +455,7 @@ app.get('/user/user-groups', authenticate, async (req: AuthenticatedReq, res) =>
     }
 });
 
-app.put('/user/edit', authenticate, async (req: AuthenticatedReq, res) => {
+app.put('/user/edit', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const update = req.body.update;
@@ -672,7 +469,7 @@ app.put('/user/edit', authenticate, async (req: AuthenticatedReq, res) => {
     }
 });
 
-app.put('/user/edit/profilePic', authenticate, async (req: AuthenticatedReq, res) => {
+app.put('/user/edit/profilePic', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const result = await userClass.editProfilePic(userId);
@@ -685,7 +482,7 @@ app.put('/user/edit/profilePic', authenticate, async (req: AuthenticatedReq, res
     }
 });
 
-app.get('/user/:userId', authenticate, async (req: AuthenticatedReq, res) => {
+app.get('/user/:userId', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const requestedUid = req.body.requestedUid;
@@ -699,7 +496,7 @@ app.get('/user/:userId', authenticate, async (req: AuthenticatedReq, res) => {
     }
 });
 
-app.get('/user/:userId/edit/role', authenticate, async (req: AuthenticatedReq, res) => {
+app.get('/user/:userId/edit/role', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const requestedUid = req.body.requestedUid;
@@ -724,19 +521,3 @@ exports.createUser = functions.auth.user().onCreate((user) => {
     return userClass.createNew(user);
 });
 
-function validateHeaders(req) {
-    if(req.headers.authorization && req.headers.authorization.startsWith('Bearer ')){
-        console.log('auth header found');
-        return req.headers.authorization.split('Bearer ')[1];
-    } else {
-        return null;
-    }
-}
-
-function decodeAuthToken(authToken) {
-    return admin.auth()
-        .verifyIdToken(authToken)
-        .then(decodedToken => {
-            return decodedToken;
-        })
-}

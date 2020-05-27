@@ -1,3 +1,4 @@
+import * as admin from 'firebase-admin';
 import { error, connectDb } from './index';
 import { ObjectId } from 'mongodb';
 import { Utils } from './utils';
@@ -10,7 +11,47 @@ const userGroupCollection = 'user-groups';
 const userGroupUserCollection = 'user-group-users';
 const actionRolesCollection = 'action-roles';
 
+function validateHeaders(req) {
+    if(req.headers.authorization && req.headers.authorization.startsWith('Bearer ')){
+        console.log('auth header found');
+        return req.headers.authorization.split('Bearer ')[1];
+    } else {
+        return null;
+    }
+}
+
+function decodeAuthToken(authToken) {
+    return admin.auth()
+        .verifyIdToken(authToken)
+        .then(decodedToken => {
+            return decodedToken;
+        })
+}
+
 export class Auth {
+    authenticate (req, res, next) {
+        const authToken = validateHeaders(req);
+        if (!authToken) {
+            return res.status(403).send('Unauthorized: Missing auth token')
+        }
+        decodeAuthToken(authToken)
+            .then((decodedToken) => { 
+                console.log('decodedToken: ', decodedToken)
+                console.log('decodedToken.uid :', decodedToken.uid);
+    
+                userClass.getUserFromUid(decodedToken.uid).then(user => {
+                    req.user = user;
+                    next();
+                }).catch((err) => {
+                    console.log('failed getUserFromUid')
+                })
+            })
+            .catch((err) => {
+                console.log('Token: Invalid', err);
+                res.status(403).send('Unauthorized')
+            });
+    }
+
     async authorised(resource, action, userId, userGroupId): Promise<{authorised: boolean, requiredRoles?: string[], message?: string}>{
         try {
             const userGroupRoleAuthorised = await this.userGroupRoleAuthorised(resource, action, userId, userGroupId);
