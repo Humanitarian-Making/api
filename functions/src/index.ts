@@ -5,12 +5,12 @@ import * as cors from 'cors';
 import { AuthenticatedReq, CreateTagObject, LanguageOption } from './interfaces';
 import { Tag } from './tag';
 import { userClass } from './user';
-import { UserGroup } from './userGroup';
 import { ErrorLog } from './error';
 import { Auth } from './auth';
 import { MongoClient, Db } from 'mongodb';
 import { locationRoutes } from './routes/location.routes';
 import { projectRoutes } from './routes/project.routes'
+import { userGroupRoutes } from './routes/user-group.routes';
 
 let cachedDb = null;
 
@@ -67,13 +67,11 @@ main.use(express.urlencoded());
 
 const tagClass = new Tag();
 
-const userGroupClass = new UserGroup();
-
-
-
 // locations routes
 app.use(locationRoutes);
 app.use(projectRoutes);
+app.use(userGroupRoutes);
+
 
 app.post('/test', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
@@ -89,157 +87,7 @@ app.post('/test', [auth.authenticate], async (req: AuthenticatedReq, res) => {
 });
 
 
-app.get('/user-groups', [auth.authenticate], async (req: AuthenticatedReq, res) => {
-    try {
-        const userId = req.user._id;
-        const result = await userGroupClass.getAll(userId);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        } 
-    } catch (error) {
-        console.error(error)
-        res.status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
 
-app.post('/user-group/create', [auth.authenticate], async (req: AuthenticatedReq, res) => {
-    try {
-        const userId = req.user._id;
-        const result = await userGroupClass.create(userId);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        } 
-    } catch (error) {
-        console.error(error)
-        res.status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.get('/user-group/:userGroupId', async (req: AuthenticatedReq, res) => {
-    try {
-        const userGroupId = req.params.userGroupId;
-        const result = await userGroupClass.get(userGroupId);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        } 
-    } catch (error) {
-        console.error(error)
-        res.status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.post('/user-group/:userGroupId/user/add', [auth.authenticate], async (req: AuthenticatedReq, res) => {
-    try {
-        if (req.user) {
-            const userId = req.user._id;
-            const user = req.body.user;
-            const result = await userGroupClass.addUser(userId, user);
-            if (result) {
-                res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-            } 
-        } else {
-            const err = new Error('No Req.user');
-            throw err;
-        }
-    } catch (error) {
-        console.error(error)
-        res.status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.put('/user-group/:userGroupId/user/remove', [auth.authenticate], async (req: AuthenticatedReq, res) => {
-    try {
-        const userId = req.user._id;
-        const user = req.body.user;
-        const result = await userGroupClass.removeUser(userId, user);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        } 
-    } catch (error) {
-        console.error(error)
-        res.status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.put('/user-group/:userGroupId/user/leave', [auth.authenticate], async (req: AuthenticatedReq, res) => {
-    try {
-        const userId = req.user._id;
-        const result = await userGroupClass.leave(userId);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        } 
-    } catch (error) {
-        console.error(error)
-        res.status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.post('/user-group/:userGroupId/request/join', [auth.authenticate], async (req: AuthenticatedReq, res) => {
-    try {
-        const userId = req.user._id;
-        const result = await userGroupClass.requestJoin(userId);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        } 
-    } catch (error) {
-        console.error(error)
-        res.status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.put('/user-group/:userGroupId/request/:requestId', [auth.authenticate], async (req: AuthenticatedReq, res) => {
-    try {
-        const userId = req.user._id;
-        const requestId = req.params.requestId
-        const result = await userGroupClass.requestResponse(userId, requestId);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        } 
-    } catch (error) {
-        console.error(error)
-        res.status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.get('/user-group/:userGroupId/tags', [auth.authenticate], async (req: AuthenticatedReq, res) => {
-    try {
-        const userId = req.user._id;
-        const userGroupId = req.params.userGroupId;
-        const result = await userGroupClass.tags(userId, userGroupId);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        } 
-    } catch (error) {
-        console.error(error)
-        res.status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.get('/user-group/:userGroupId/projects', [auth.authenticate], async (req: AuthenticatedReq, res) => {
-    try {
-        const userId = req.user._id;
-        const result = await userGroupClass.projects(userId);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        } 
-    } catch (error) {
-        console.error(error)
-        res.status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-app.get('/user-group/:userGroupId/resources', [auth.authenticate], async (req: AuthenticatedReq, res) => {
-    try {
-        const userId = req.user._id;
-        const result = await userGroupClass.resources(userId);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        } 
-    } catch (error) {
-        console.error(error)
-        res.status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
 
 app.post('/tag/createRoot', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
