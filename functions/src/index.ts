@@ -9,6 +9,7 @@ import { userClass } from './user';
 import { UserGroup } from './userGroup';
 import { ErrorLog } from './error';
 import { MongoClient, Db } from 'mongodb';
+import { locationRoutes } from './routes/location.routes';
 
 let cachedDb = null;
 
@@ -48,7 +49,7 @@ admin.initializeApp();
 export const error = new ErrorLog(true);
 
 //initialize express server
-const app = express();
+export const app = express();
 const main = express();
 
 main.use(cors({ origin: true }));
@@ -67,7 +68,7 @@ const projectClass = new Project();
 const userGroupClass = new UserGroup();
 
 
-function authenticate (req, res, next) {
+export function authenticate (req, res, next) {
     const authToken = validateHeaders(req);
     if (!authToken) {
         return res.status(403).send('Unauthorized: Missing auth token')
@@ -75,6 +76,8 @@ function authenticate (req, res, next) {
     decodeAuthToken(authToken)
         .then((decodedToken) => { 
             console.log('decodedToken: ', decodedToken)
+            console.log('decodedToken.uid :', decodedToken.uid);
+
             userClass.getUserFromUid(decodedToken.uid).then(user => {
                 req.user = user;
                 next();
@@ -87,6 +90,9 @@ function authenticate (req, res, next) {
             res.status(403).send('Unauthorized')
         });
 }
+
+// locations routes
+app.use(locationRoutes);
 
 app.post('/test', authenticate, async (req: AuthenticatedReq, res) => {
     try {
@@ -128,11 +134,10 @@ app.post('/user-group/create', authenticate, async (req: AuthenticatedReq, res) 
     }
 });
 
-app.get('/user-group/:userGroupId', authenticate, async (req: AuthenticatedReq, res) => {
+app.get('/user-group/:userGroupId', async (req: AuthenticatedReq, res) => {
     try {
-        const userId = req.user._id;
         const userGroupId = req.params.userGroupId;
-        const result = await userGroupClass.get(userId, userGroupId);
+        const result = await userGroupClass.get(userGroupId);
         if (result) {
             res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
         } 
@@ -144,12 +149,17 @@ app.get('/user-group/:userGroupId', authenticate, async (req: AuthenticatedReq, 
 
 app.post('/user-group/:userGroupId/user/add', authenticate, async (req: AuthenticatedReq, res) => {
     try {
-        const userId = req.user._id;
-        const user = req.body.user;
-        const result = await userGroupClass.addUser(userId, user);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        } 
+        if (req.user) {
+            const userId = req.user._id;
+            const user = req.body.user;
+            const result = await userGroupClass.addUser(userId, user);
+            if (result) {
+                res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            } 
+        } else {
+            const err = new Error('No Req.user');
+            throw err;
+        }
     } catch (error) {
         console.error(error)
         res.status(400).send({success: false, message: 'An Error Occurred'})
@@ -616,10 +626,16 @@ app.get('/users', authenticate, async (req: AuthenticatedReq, res) => {
 
 app.get('/user/profile', authenticate, async (req: AuthenticatedReq, res) => {
     try {
-        const userId = req.user._id;
-        const result = await userClass.getUserProfile(userId);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+        if(req.user) {
+            console.log('req.user :', req.user);
+            const userId = req.user._id;
+            const result = await userClass.getUserProfile(userId);
+            if (result) {
+                res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            }
+        }  else {
+            const err = new Error('No Req.user');
+            throw err;
         }
     } catch (error) {
         console.error(error)

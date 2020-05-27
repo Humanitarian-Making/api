@@ -1,7 +1,7 @@
 import { error, connectDb } from './index';
 import { ObjectId } from 'mongodb';
 import { Utils } from './utils';
-import { TagsResponse } from './interfaces';
+import { TagsResponse, UserGroupRes } from './interfaces';
 import { Auth } from './auth';
 import { userGroupActions } from './roles';
 
@@ -12,8 +12,9 @@ const userGroupCollection = 'user-groups';
 const userGroupUserCollection = 'user-group-users';
 const actionRolesCollection = 'action-roles';
 const tagCollection = 'tags';
-
-
+const projectCollection = 'projects';
+const locationCollection = 'locations';
+const resourceCollection = 'resources';
 
 export class UserGroup {
     async getAll(uid): Promise<{ success: boolean, userGroups?:[], message?:string}> {
@@ -37,12 +38,30 @@ export class UserGroup {
     }
 
     // need to update
-    async get(userGroupId, uid?): Promise<{ success: boolean, userGroup?:{}, message?:string}> {
+    async get(userGroupId): Promise<UserGroupRes> {
         try {
-            return {success: true, userGroup: {}}
+            const mongoDb = await connectDb();
+            const userGroupDoc = await mongoDb.collection(userGroupCollection).findOne({_id: new ObjectId(userGroupId)});
+            const users = await mongoDb.collection(userGroupUserCollection).find({userGroup: new ObjectId(userGroupId)}).toArray(); 
+            const projects = await mongoDb.collection(projectCollection).find({userGroupId: new ObjectId(userGroupId)}).toArray(); 
+            const locations = await mongoDb.collection(locationCollection).find({userGroupId: new ObjectId(userGroupId)}).toArray();
+            const resources = await mongoDb.collection(resourceCollection).find({userGroupId: new ObjectId(userGroupId)}).toArray();
+            if (userGroupDoc) {
+                const userGroup = {
+                    ... userGroupDoc, 
+                    projects,
+                    users,
+                    locations,
+                    resources,
+                }
+                return { success: true, userGroup }; ;
+            } else {
+                console.log('tags: err');
+                return { success: false, message: `Failed to load tags`};
+            } 
         } catch(err) {
-            error.log(`UserGroup.getAll: uid: ${uid}`, err);
-            return {success: false, message: `UID: ${uid}, Error Occurred`};
+            error.log(`UserGroup.getAll: userGroupId: ${userGroupId}`, err);
+            return {success: false, message: `UID: ${userGroupId}, Error Occurred`};
         }    
     }
 

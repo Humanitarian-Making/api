@@ -19,6 +19,14 @@ export interface TagsResponse extends StandardResponse {
     tags?: any[];
 }
 
+export interface LocationsResponse extends StandardResponse {
+    locations?: any[];
+}
+
+export interface UserGroupRes extends StandardResponse {
+    userGroup?: any;
+}
+
 export interface UserObj {
     // id 
     displayName: string;
