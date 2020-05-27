@@ -13,6 +13,9 @@ import { userGroupRoutes } from './routes/user-group.routes';
 import { userRoutes } from './routes/user.routes';
 import { tagRoutes } from './routes/tag.routes';
 
+// classes
+import { userClass } from './user';
+
 // configurations
 const config = functions.config();
 const dbUrl = config.db.url;
