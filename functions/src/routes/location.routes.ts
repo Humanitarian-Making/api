@@ -5,7 +5,7 @@ import { Location } from '../location';
 const routes: express.Router = express.Router()
 const location = new Location()
 
-routes.get('/location/nearby', async (req: AuthenticatedReq, res) => {
+routes.put('/location/nearby', async (req: AuthenticatedReq, res) => {
     try {
         const currentLocation = req.body.currentLocation;
         const distance = req.body.distance;
