@@ -1,6 +1,6 @@
 # Humanitarian Making API
 
-This project is built using Typescript in NodeJS (v10.10), ExpressJS and MongoDB. It running as a Firebase Function.
+This project is built using Typescript(v3.9.3) in NodeJS (v10.10), ExpressJS and MongoDB. It running as a Firebase Function.
 
 ## Local server
 Install NodeJS v10.10 and Firebase using 
