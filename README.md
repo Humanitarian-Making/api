@@ -30,5 +30,6 @@ An automatic deploy to the test server is setup. Any changes to the dev branch w
 
 ## Production server: <https://humanitarianmaking.org>
 
-An automatic deploy to the production server is setup. Any changes to the master branch will trigger this deploy.
+An automatic deploy to the production server is setup. Any merges to the Master branch will trigger this.
+
 
