@@ -3,7 +3,7 @@
 This project is built using Typescript in NodeJS (v10.10), ExpressJS and MongoDB. It running as a Firebase Function.
 
 ## Local server
-Install Node v10.10 and Firebase using 
+Install NodeJS v10.10 and Firebase using 
 ```
 npm install -g firebase-tools
 ```
