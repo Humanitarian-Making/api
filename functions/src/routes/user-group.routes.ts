@@ -46,6 +46,19 @@ routes.get('/user-group/:userGroupId', async (req: AuthenticatedReq, res) => {
     }
 });
 
+routes.get('/user-group/:userGroupId/users', [auth.authenticate], async (req: AuthenticatedReq, res) => {
+    try {
+        const userGroupId = req.params.userGroupId;
+        const result = await userGroupClass.getUsers(userGroupId, userGroupId);
+        if (result) {
+            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+        } 
+    } catch (error) {
+        console.error(error)
+        res.status(400).send({success: false, message: 'An Error Occurred'})
+    }
+});
+
 routes.post('/user-group/:userGroupId/user/add', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         if (req.user) {

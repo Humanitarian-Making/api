@@ -58,6 +58,69 @@ export class UserGroup {
         }    
     }
 
+    async getUsers(userId, userGroupId): Promise<any> {
+        try {
+            const authorised = await auth.authorised('user-group', userGroupActions.canViewUsers, userId, userGroupId);
+            if (authorised && authorised.authorised) {
+                const mongoDb = await connectDb();
+                const userGroup = await mongoDb.collection(collection.userGroups).findOne({_id: new ObjectId(userGroupId)});
+                const users = await mongoDb.collection(collection.userGroupUsers).aggregate([
+                        { 
+                            "$match" : { 
+                                "userGroup" : new ObjectId(userGroupId)
+                            }
+                        }, 
+                        { 
+                            "$lookup" : { 
+                                "from" : "users", 
+                                "localField" : "user", 
+                                "foreignField" : "_id", 
+                                "as" : "user"
+                            }
+                        }, 
+                        { 
+                            "$unwind" : { 
+                                "path" : "$user", 
+                                "preserveNullAndEmptyArrays" : false
+                            }
+                        }, 
+                        { 
+                            "$project" : { 
+                                "_id" : 1.0, 
+                                "user" : { 
+                                    "_id" : 1.0, 
+                                    "email" : 1.0, 
+                                    "displayName" : 1.0, 
+                                    "photoURL" : 1.0, 
+                                    "language" : 1.0
+                                }, 
+                                "role" : 1.0
+                            }
+                        }
+                    ], 
+                    { 
+                        "allowDiskUse" : false
+                    }
+                ).toArray(); 
+                if (userGroup) {
+                    const userGroupUsers = {
+                        ... userGroup, 
+                        users
+                    }
+                    return { success: true, userGroupUsers }; ;
+                } else {
+                    console.log('tags: err');
+                    return { success: false, message: `Failed to load tags`};
+                }
+            } else {
+                return {success: false, message: `Unauthorised`};
+            }
+        } catch(err) {
+            error.log(`UserGroup.getAll: userGroupId: ${userGroupId}`, err);
+            return {success: false, message: `UID: ${userGroupId}, Error Occurred`};
+        }    
+    }
+
     async addUser(uid, user): Promise<{ success: boolean, message?:string}> {
         try {
             // sysadmin
