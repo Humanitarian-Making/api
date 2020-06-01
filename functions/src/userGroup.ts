@@ -113,7 +113,7 @@ export class UserGroup {
                     return { success: false, message: `Failed to load tags`};
                 }
             } else {
-                return {success: false, message: `Unauthorised`};
+                return {success: false, message: `Unauthorised to view User Group Users`};
             }
         } catch(err) {
             error.log(`UserGroup.getAll: userGroupId: ${userGroupId}`, err);

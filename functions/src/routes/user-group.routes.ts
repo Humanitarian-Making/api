@@ -48,8 +48,9 @@ routes.get('/user-group/:userGroupId', async (req: AuthenticatedReq, res) => {
 
 routes.get('/user-group/:userGroupId/users', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
+        const userId = req.user._id;
         const userGroupId = req.params.userGroupId;
-        const result = await userGroupClass.getUsers(userGroupId, userGroupId);
+        const result = await userGroupClass.getUsers(userId, userGroupId);
         if (result) {
             res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
         } 
