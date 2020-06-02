@@ -48,7 +48,6 @@ routes.get('/project/:projectId', async (req, res) => {
 
 routes.get('/project/:projectId/edit', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
-        console.log('/project/:projectId/edit: ', req.params.projectId, req.user._id);
         const userId = req.user._id;
         const projectId = req.params.projectId;
         const result = await projectClass.getEditable(userId, projectId);
@@ -63,7 +62,6 @@ routes.get('/project/:projectId/edit', [auth.authenticate], async (req: Authenti
 
 routes.put('/project/:projectId/edit/name', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
-        console.log('/project/:projectId/edit: ', req.params.projectId, req.user._id);
         const userId = req.user._id;
         const projectId = req.params.projectId;
         const name = req.body.name;
@@ -79,7 +77,6 @@ routes.put('/project/:projectId/edit/name', [auth.authenticate], async (req: Aut
 
 routes.put('/project/:projectId/edit/desc', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
-        console.log('/project/:projectId/edit: ', req.params.projectId, req.user._id);
         const userId = req.user._id;
         const projectId = req.params.projectId;
         const desc = req.body.desc;
@@ -95,7 +92,6 @@ routes.put('/project/:projectId/edit/desc', [auth.authenticate], async (req: Aut
 
 routes.put('/project/:projectId/edit/published', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
-        console.log('/project/:projectId/edit: ', req.params.projectId, req.user._id);
         const userId = req.user._id;
         const projectId = req.params.projectId;
         const desc = req.body.desc;
@@ -111,7 +107,6 @@ routes.put('/project/:projectId/edit/published', [auth.authenticate], async (req
 
 routes.put('/project/:projectId/edit/userGroup', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
-        console.log('/project/:projectId/edit/userGroup: ', req.params.projectId, req.user._id);
         const userId = req.user._id;
         const projectId = req.params.projectId;
         const newUserGroupId = req.body.userGroupId;
@@ -145,11 +140,9 @@ routes.put('/project/:projectId/tag/:tagId/add', [auth.authenticate], async (req
 
 routes.put('/project/:projectId/tag/:tagId/remove', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
-        console.log('/project/:projectId/:tagId/remove: ', req.params, req.user._id);
         const userId = req.user._id;
         const tagId = req.params.tagId;
         const projectId = req.params.projectId;
-        console.log('removeTag: ', userId, tagId, userId);
         const result = await projectClass.removeTag(projectId, tagId, userId);
         if (result) {
             res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
@@ -162,11 +155,9 @@ routes.put('/project/:projectId/tag/:tagId/remove', [auth.authenticate], async (
 
 routes.put('/project/:projectId/tags/reorder', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
-        console.log('/project/:projectId/tags/reorder: ', req.body, req.user._id);
         const userId = req.user._id;
         const tags = req.body.tags;
         const projectId = req.params.projectId;
-        console.log('removeTag: ', userId, tags, userId);
         const result = await projectClass.reorderTags(projectId, tags, userId);
         if (result) {
             res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
@@ -177,10 +168,23 @@ routes.put('/project/:projectId/tags/reorder', [auth.authenticate], async (req: 
     }
 });
 
-routes.get('/projects/sync', async (req: AuthenticatedReq, res) => {
+routes.get('/sync/projects', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
-        console.log('/projects/sync')
-        const synced =  await projectClass.updateAll();
+        const synced =  await projectClass.syncWithWikifactory(req.user._id);
+        if (synced) {
+            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(synced);
+        } else {
+            res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send(synced);
+        }
+    } catch (error) {
+        console.error(error)
+        res.status(400).send({success: false, message: 'An Error Occurred'})
+    }
+});
+
+routes.get('/sync/reports', [auth.authenticate], async (req: AuthenticatedReq, res) => {
+    try {
+        const synced =  await projectClass.getSyncReports();
         if (synced) {
             res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(synced);
         } else {
