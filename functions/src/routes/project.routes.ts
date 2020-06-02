@@ -168,9 +168,23 @@ routes.put('/project/:projectId/tags/reorder', [auth.authenticate], async (req: 
     }
 });
 
-routes.get('/projects/sync', [auth.authenticate], async (req: AuthenticatedReq, res) => {
+routes.get('/sync/projects', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
-        const synced =  await projectClass.updateAll();
+        const synced =  await projectClass.syncWithWikifactory(req.user._id);
+        if (synced) {
+            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(synced);
+        } else {
+            res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send(synced);
+        }
+    } catch (error) {
+        console.error(error)
+        res.status(400).send({success: false, message: 'An Error Occurred'})
+    }
+});
+
+routes.get('/sync/reports', [auth.authenticate], async (req: AuthenticatedReq, res) => {
+    try {
+        const synced =  await projectClass.getSyncReports();
         if (synced) {
             res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(synced);
         } else {

@@ -758,24 +758,58 @@ export class Project {
         }
     }    
 
-    async updateAll(): Promise<any> {
+    async syncWithWikifactory(userId): Promise<any> {
         return new Promise( async (resolve, reject) => {
             try {
+                const startTime = new Date();
                 const projectWikis: ProjectWiki[] = await this.getAllFromWikifactory();
                 const array = []
                 projectWikis.forEach((project) => {
                     array.push(this.updateOrCreateOne(project));   
                 });
                 Promise.all(array)
-                    .then((res) => resolve(res))
-                    .catch((err) => {throw err})
-                
+                    .then((res) => {
+                        this.createSyncReport(userId, startTime, new Date(), res);
+                        resolve(res);
+                    })
+                    .catch((err) => {
+                        this.createSyncReport(userId, startTime, new Date(), {}, err);
+                        throw err
+                    });
             } catch(err) {
                 error.log('Project.updateAll', err);
                 reject(err);
             }
         })
     }
+
+    async createSyncReport(userId, start, end, result, err?): Promise<void> {
+        try {
+            const mongoDb = await connectDb();
+            mongoDb.collection(collection.syncReports).insertOne({
+                target: 'wikifactory',
+                resource: 'projects',
+                userId,
+                start,
+                end, 
+                result,
+                error: err
+            });
+        } catch(err) {
+            error.log('Project.createSyncReport', err);
+        }
+    }
+
+    async getSyncReports(): Promise<{success: boolean, message?: string, syncReports?: any[]}> {
+        try {
+            const mongoDb = await connectDb();
+            const syncReports = await mongoDb.collection(collection.syncReports).find({}).toArray()
+            return {success: true,  syncReports};
+        } catch(err) {
+            return {success: false,  message: 'Failed to get Sync Reports'};
+        }
+    }
+    
 }
 
 interface ProjectUpdate {

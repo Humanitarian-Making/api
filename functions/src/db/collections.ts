@@ -6,5 +6,6 @@ export const collection = {
     userGroups: 'user-groups',
     users: 'users',
     locations: 'locations',
-    resources: 'resources'
+    resources: 'resources',
+    syncReports: 'sync-reports'
 }
