@@ -33,9 +33,6 @@ export class Auth {
         }
         decodeAuthToken(authToken)
             .then((decodedToken) => { 
-                console.log('decodedToken: ', decodedToken)
-                console.log('decodedToken.uid :', decodedToken.uid);
-    
                 userClass.getUserFromUid(decodedToken.uid).then(user => {
                     req.user = user;
                     next();
@@ -55,7 +52,7 @@ export class Auth {
             if(userGroupRoleAuthorised.authorised){
                 return {authorised: true}
             } else {
-                return {authorised: true, requiredRoles: userGroupRoleAuthorised.requiredRoles}
+                return {authorised: false, requiredRoles: userGroupRoleAuthorised.requiredRoles}
             }
         } catch(err) {
             error.log(`Auth.authorised, resource: ${resource}, action: ${action}, uid: ${userId}, userGroupId: ${userGroupId}`, err)

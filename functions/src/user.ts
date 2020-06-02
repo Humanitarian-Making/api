@@ -104,12 +104,9 @@ class User {
 
     async createNew(user) {
         try {
-            console.log('user: ', user);
             const mongoDb = await connectDb()
             const providerData = user.providerData[0] ? user.providerData[0] : null;
-            console.log('providerData :', providerData);
             const email = user.email ? user.email : user.providerData[0].email;
-            console.log('email :', email);
             const created = await mongoDb.collection(collection.users).updateOne(
                 {email: email}, 
                 {
@@ -150,10 +147,8 @@ class User {
 
     async getUserIdFromUid (uid: string) : Promise<string>{
         try {
-            console.log('getUserIdFromUid', uid);
             const mongoDb = await connectDb()
             const user: any = await mongoDb.collection(collection.users).findOne({'providers.uid': uid })
-            console.log('getUserIdFromUid user:', user);
             if (user) {
                 return user._id;
             } else {
@@ -165,12 +160,27 @@ class User {
         }
     }
 
+    async getUserIdFromEmail (email: string) : Promise<string>{
+        try {
+            console.log('getUserIdFromEmail', email);
+            const mongoDb = await connectDb()
+            const user: any = await mongoDb.collection(collection.users).findOne({'email': email })
+            if (user) {
+                return user._id;
+            } else {
+                return null;
+            }
+        } catch (err) {
+            console.log('getUserIdFromEmail err: ', err);
+            return null;
+        }
+    }
+
     async getUserFromUid (uid: string) : Promise<string>{
         try {
             console.log('getUserFromUid', uid);
             const mongoDb = await connectDb()
             const user: any = await mongoDb.collection(collection.users).findOne({'providers.uid': uid })
-            console.log('getUserFromUid user:', user);
             if (user) {
                 return user;
             } else {

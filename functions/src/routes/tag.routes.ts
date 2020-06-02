@@ -11,7 +11,6 @@ const auth = new Auth();
 routes.post('/tag/createRoot', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
-        console.log(req.body);
         const tag = req.body.rootTag;
         const createResult = await tagClass.createRoot(userId, tag);
         if (createResult) {

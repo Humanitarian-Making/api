@@ -64,8 +64,10 @@ routes.post('/user-group/:userGroupId/user/add', [auth.authenticate], async (req
     try {
         if (req.user) {
             const userId = req.user._id;
-            const user = req.body.user;
-            const result = await userGroupClass.addUser(userId, user);
+            const userGroupId = req.params.userGroupId;
+            const email = req.body.email;
+            const role = req.body.role;
+            const result = await userGroupClass.addUser(userId, userGroupId, email, role);
             if (result) {
                 res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
             } 
@@ -79,11 +81,28 @@ routes.post('/user-group/:userGroupId/user/add', [auth.authenticate], async (req
     }
 });
 
-routes.put('/user-group/:userGroupId/user/remove', [auth.authenticate], async (req: AuthenticatedReq, res) => {
+routes.put('/user-group/:userGroupId/user/:userId/remove', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
-        const user = req.body.user;
-        const result = await userGroupClass.removeUser(userId, user);
+        const userGroupId = req.params.userGroupId;
+        const removeUserId = req.params.userId;
+        const result = await userGroupClass.removeUser(userId, userGroupId, removeUserId);
+        if (result) {
+            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+        } 
+    } catch (error) {
+        console.error(error)
+        res.status(400).send({success: false, message: 'An Error Occurred'})
+    }
+});
+
+routes.put('/user-group/:userGroupId/user/:userId/role/:role/edit', [auth.authenticate], async (req: AuthenticatedReq, res) => {
+    try {
+        const userId = req.user._id;
+        const userGroupId = req.params.userGroupId;
+        const editUserId = req.params.userId;
+        const role = req.params.role;
+        const result = await userGroupClass.updateUserRole(userId, userGroupId, editUserId, role);
         if (result) {
             res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
         } 

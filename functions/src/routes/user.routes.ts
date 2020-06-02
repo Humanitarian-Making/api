@@ -22,7 +22,6 @@ routes.get('/users', [auth.authenticate], async (req: AuthenticatedReq, res) => 
 routes.get('/user/profile', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         if(req.user) {
-            console.log('req.user :', req.user);
             const userId = req.user._id;
             const result = await userClass.getUserProfile(userId);
             if (result) {
@@ -41,7 +40,6 @@ routes.get('/user/profile', [auth.authenticate], async (req: AuthenticatedReq, r
 routes.get('/user/user-groups', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
-        console.log('req.query: ', req);
         const includeOpenGroups = true; //string = req.query.includeOpenGroups;
         const result = await userClass.getUserUserGroups(userId, includeOpenGroups);
         if (result) {
