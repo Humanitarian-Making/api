@@ -19,7 +19,6 @@
     "@types/lodash": "^4.14.151",
     "@types/mongodb": "^3.5.17",
     "apollo-boost": "^0.4.7",
-    "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "cross-fetch": "^3.0.4",
     "express": "^4.17.1",

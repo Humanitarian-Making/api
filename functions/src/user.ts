@@ -1,10 +1,7 @@
+import { collection } from './db/collections';
 import { error, connectDb } from './index';
 import { UserGroupsRolesRes } from './interfaces';
 import { ObjectId } from 'mongodb';
-
-const userCollection =  'users';
-const userGroupCollection = 'user-groups'
-const userGroupUsersCollection = 'user-group-users';
 
 class User {
     async getAll(uid): Promise<{ success: boolean, users?: [],message?:string}> {
@@ -40,7 +37,7 @@ class User {
     async getUserProfile(userId): Promise<{ success: boolean, message?:string, user?: any}> {
         try {
             const mongoDb = await connectDb();
-            const user = await mongoDb.collection(userCollection).findOne({_id: new Object(userId)})
+            const user = await mongoDb.collection(collection.users).findOne({_id: new Object(userId)})
             if(user) {
                 return { success: true, user: user}
             } else {
@@ -56,7 +53,7 @@ class User {
     async editProfile(userId, update: {displayName: string, language: string}): Promise<{ success: boolean,message?:string}> {
         try {
             const mongoDb = await connectDb();
-            const user = await mongoDb.collection(userCollection).updateOne(
+            const user = await mongoDb.collection(collection.users).updateOne(
                 {_id: new Object(userId)}, 
                 {
                     $set: {
@@ -107,13 +104,10 @@ class User {
 
     async createNew(user) {
         try {
-            console.log('user: ', user);
             const mongoDb = await connectDb()
             const providerData = user.providerData[0] ? user.providerData[0] : null;
-            console.log('providerData :', providerData);
             const email = user.email ? user.email : user.providerData[0].email;
-            console.log('email :', email);
-            const created = await mongoDb.collection(userCollection).updateOne(
+            const created = await mongoDb.collection(collection.users).updateOne(
                 {email: email}, 
                 {
                     $set: {
@@ -153,10 +147,8 @@ class User {
 
     async getUserIdFromUid (uid: string) : Promise<string>{
         try {
-            console.log('getUserIdFromUid', uid);
             const mongoDb = await connectDb()
-            const user: any = await mongoDb.collection(userCollection).findOne({'providers.uid': uid })
-            console.log('getUserIdFromUid user:', user);
+            const user: any = await mongoDb.collection(collection.users).findOne({'providers.uid': uid })
             if (user) {
                 return user._id;
             } else {
@@ -168,12 +160,27 @@ class User {
         }
     }
 
+    async getUserIdFromEmail (email: string) : Promise<string>{
+        try {
+            console.log('getUserIdFromEmail', email);
+            const mongoDb = await connectDb()
+            const user: any = await mongoDb.collection(collection.users).findOne({'email': email })
+            if (user) {
+                return user._id;
+            } else {
+                return null;
+            }
+        } catch (err) {
+            console.log('getUserIdFromEmail err: ', err);
+            return null;
+        }
+    }
+
     async getUserFromUid (uid: string) : Promise<string>{
         try {
             console.log('getUserFromUid', uid);
             const mongoDb = await connectDb()
-            const user: any = await mongoDb.collection(userCollection).findOne({'providers.uid': uid })
-            console.log('getUserFromUid user:', user);
+            const user: any = await mongoDb.collection(collection.users).findOne({'providers.uid': uid })
             if (user) {
                 return user;
             } else {
@@ -188,7 +195,7 @@ class User {
     async getUserUserGroups(userId, includeOpenGroups): Promise<UserGroupsRolesRes> {
         try {
             const mongoDb = await connectDb()
-            const closedUserGroups: any = await mongoDb.collection(userGroupUsersCollection).aggregate(
+            const closedUserGroups: any = await mongoDb.collection(collection.userGroupUsers).aggregate(
                 [
                     { 
                         "$match" : { 
@@ -221,7 +228,7 @@ class User {
                 }
             ).toArray();
             if (includeOpenGroups) {
-                const openUserGroups = await mongoDb.collection(userGroupCollection).find({open: true}).toArray();
+                const openUserGroups = await mongoDb.collection(collection.userGroups).find({open: true}).toArray();
                 const openUserGroupRole = openUserGroups.map((userGroup) => {
                     return {
                         role: 'user',

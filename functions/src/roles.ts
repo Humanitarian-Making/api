@@ -40,6 +40,7 @@ export const userGroupActions = {
     canEdit: 'canEdit',
     canCreateRootTag: 'canCreateRootTag',
     canAddUser: 'canAddUser',
+    canEditUserRole: 'canEditUserRole',
     canDeleteUser: 'canDeleteUser',
     canRespondToRequest: 'canRespondToRequest',
     canViewUsers: 'canViewUsers',

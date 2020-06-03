@@ -1,19 +1,19 @@
+import { userClass } from './user';
+import { collection } from './db/collections';
 import { error, connectDb } from './index';
 import { ObjectId } from 'mongodb';
 import { Utils } from './utils';
-import { TagsResponse } from './interfaces';
+import { TagsResponse, UserGroupRes, StandardResponse } from './interfaces';
 import { Auth } from './auth';
 import { userGroupActions } from './roles';
 
 const utils = new Utils();
 const auth = new Auth();
 
-const userGroupCollection = 'user-groups';
-const userGroupUserCollection = 'user-group-users';
-const actionRolesCollection = 'action-roles';
-const tagCollection = 'tags';
-
-
+export enum UserGroupRoles {
+    admin= 'admin',
+    user = 'user'
+}
 
 export class UserGroup {
     async getAll(uid): Promise<{ success: boolean, userGroups?:[], message?:string}> {
@@ -37,35 +37,193 @@ export class UserGroup {
     }
 
     // need to update
-    async get(userGroupId, uid?): Promise<{ success: boolean, userGroup?:{}, message?:string}> {
+    async get(userGroupId): Promise<UserGroupRes> {
         try {
-            return {success: true, userGroup: {}}
+            const mongoDb = await connectDb();
+            const userGroupDoc = await mongoDb.collection(collection.userGroups).findOne({_id: new ObjectId(userGroupId)});
+            const users = await mongoDb.collection(collection.userGroupUsers).find({userGroup: new ObjectId(userGroupId)}).toArray(); 
+            const projects = await mongoDb.collection(collection.projects).find({userGroupId: new ObjectId(userGroupId)}).toArray(); 
+            const locations = await mongoDb.collection(collection.locations).find({userGroupId: new ObjectId(userGroupId)}).toArray();
+            const resources = await mongoDb.collection(collection.resources).find({userGroupId: new ObjectId(userGroupId)}).toArray();
+            if (userGroupDoc) {
+                const userGroup = {
+                    ... userGroupDoc, 
+                    projects,
+                    users,
+                    locations,
+                    resources,
+                }
+                return { success: true, userGroup }; ;
+            } else {
+                console.log('tags: err');
+                return { success: false, message: `Failed to load tags`};
+            } 
         } catch(err) {
-            error.log(`UserGroup.getAll: uid: ${uid}`, err);
-            return {success: false, message: `UID: ${uid}, Error Occurred`};
+            error.log(`UserGroup.getAll: userGroupId: ${userGroupId}`, err);
+            return {success: false, message: `UID: ${userGroupId}, Error Occurred`};
         }    
     }
 
-    async addUser(uid, user): Promise<{ success: boolean, message?:string}> {
+    async getUsers(userId, userGroupId): Promise<any> {
         try {
-            // sysadmin
-            // userGroup admin
-            return {success: true}
+            const authorised = await auth.authorised('user-group', userGroupActions.canViewUsers, userId, userGroupId);
+            console.log('authorised :', authorised);
+            if (authorised && authorised.authorised) {
+                const mongoDb = await connectDb();
+                const userGroup = await mongoDb.collection(collection.userGroups).findOne({_id: new ObjectId(userGroupId)});
+                const users = await mongoDb.collection(collection.userGroupUsers).aggregate([
+                        { 
+                            "$match" : { 
+                                "userGroup" : new ObjectId(userGroupId)
+                            }
+                        }, 
+                        { 
+                            "$lookup" : { 
+                                "from" : "users", 
+                                "localField" : "user", 
+                                "foreignField" : "_id", 
+                                "as" : "user"
+                            }
+                        }, 
+                        { 
+                            "$unwind" : { 
+                                "path" : "$user", 
+                                "preserveNullAndEmptyArrays" : false
+                            }
+                        }, 
+                        { 
+                            "$project" : { 
+                                "_id" : 1.0, 
+                                "user" : { 
+                                    "_id" : 1.0, 
+                                    "email" : 1.0, 
+                                    "displayName" : 1.0, 
+                                    "photoURL" : 1.0, 
+                                    "language" : 1.0
+                                }, 
+                                "role" : 1.0
+                            }
+                        }
+                    ], 
+                    { 
+                        "allowDiskUse" : false
+                    }
+                ).toArray(); 
+                if (userGroup) {
+                    const userGroupUsers = {
+                        ... userGroup, 
+                        users
+                    }
+                    return { success: true, userGroupUsers }; ;
+                } else {
+                    console.log('tags: err');
+                    return { success: false, message: `Failed to load tags`};
+                }
+            } else {
+                return {success: false, message: `Unauthorised to view User Group Users`};
+            }
         } catch(err) {
-            error.log(`UserGroup.getAll: uid: ${uid}`, err);
-            return {success: false, message: `UID: ${uid}, Error Occurred`};
+            error.log(`UserGroup.getAll: userGroupId: ${userGroupId}`, err);
+            return {success: false, message: `UID: ${userGroupId}, Error Occurred`};
         }    
     }
 
-    async removeUser(uid, user): Promise<{ success: boolean, message?:string}> {
+    async addUser(userId: string, userGroupId: string, email: string, role: string): Promise<StandardResponse> {
         try {
-            // sysadmin
-            // userGroup admin
-            return {success: true}
+            const authorised = await auth.authorised('user-group', userGroupActions.canAddUser, userId, userGroupId);
+            if (authorised && authorised.authorised) {
+                const newUserId = await userClass.getUserIdFromEmail(email);
+                const roleExists = UserGroupRoles[role] === null ? false : true;
+                if (newUserId && roleExists) {
+                    const mongoDb = await connectDb();
+                    const added = await mongoDb.collection(collection.userGroupUsers).updateOne(
+                        {
+                            userGroup: new ObjectId(userGroupId), 
+                            user: new ObjectId(newUserId)
+                        },
+                        {
+                            $set: {
+                                role: role,
+                                update: new Date(),
+                                updatedBy: new ObjectId(userId)
+                            }, 
+                            $setOnInsert: {
+                                added: new Date(),
+                                addedBy: new ObjectId(userId)
+                            }
+                        }, 
+                        { upsert: true });
+                    console.log('addUser added: ', added);
+                    return { success: true}
+                } else {
+                    return { success: false, message: `No user with email address of ${email} exists.`}
+                }
+            } else {
+                return {success: false, message: `Unauthorised to add a user to this User Group`};
+            }
         } catch(err) {
-            error.log(`UserGroup.getAll: uid: ${uid}`, err);
-            return {success: false, message: `UID: ${uid}, Error Occurred`};
+            error.log(`UserGroup.addOrUpdateUser: userId: ${userId}`, err);
+            return {success: false, message: `userId: ${userId}, Error Occurred`};
         }    
+    }
+
+    async updateUserRole(userId: string, userGroupId: string, editUserId: string, role: string): Promise<StandardResponse> {
+        try {
+            const authorised = await auth.authorised('user-group', userGroupActions.canEditUserRole, userId, userGroupId);
+            if (authorised && authorised.authorised) {
+                const roleExists = UserGroupRoles[role] === null ? false : true;
+                if (roleExists) {
+                    const mongoDb = await connectDb();
+                    const update = await mongoDb.collection(collection.userGroupUsers).updateOne(
+                        {
+                            userGroup: new ObjectId(userGroupId), 
+                            user: new ObjectId(editUserId)
+                        },
+                        {
+                            $set: {
+                                role: role,
+                                update: new Date(),
+                                updatedBy: new ObjectId(userId)
+                            }, 
+                            $setOnInsert: {
+                                added: new Date(),
+                                addedBy: new ObjectId(userId)
+                            }
+                        }, 
+                        { upsert: true });
+                    console.log('updateUserRole update: ', update);
+                    return { success: true}
+                } else {
+                    return { success: false, message: `No role selected does not exist .`}
+                }
+            } else {
+                return {success: false, message: `Unauthorised to add a user to this User Group`};
+            }
+        } catch(err) {
+            error.log(`UserGroup.updateUserRole: userId: ${userId}, userGroupId: ${userGroupId}, role: ${role}`, err);
+            return {success: false, message: `userId: ${userId}, Error Occurred`};
+        }    
+    }
+
+    async removeUser(userId: string, userGroupId: string, removeUserId: string): Promise<StandardResponse> {
+        try {
+            const authorised = await auth.authorised('user-group', userGroupActions.canDeleteUser, userId, userGroupId);
+            if (authorised && authorised.authorised) {
+                const mongoDb = await connectDb();
+                const update = await mongoDb.collection(collection.userGroupUsers).deleteMany(
+                    {
+                        userGroup: new ObjectId(userGroupId), 
+                        user: new ObjectId(removeUserId)
+                    });
+                console.log('update: ', update);
+                return { success: true}
+            } else {
+                return {success: false, message: `Unauthorised to remove a user to this User Group`};
+            }
+        } catch(err) {
+            error.log(`UserGroup.addOrUpdateUser: userId: ${userId}`, err);
+            return {success: false, message: `userId: ${userId}, Error Occurred`};
+        }     
     }
 
     async leave(uid): Promise<{ success: boolean, message?:string}> {
@@ -104,7 +262,7 @@ export class UserGroup {
         const authorised = await auth.authorised('user-group', userGroupActions.canViewTags, userId, userGroupId);
         if(authorised) {
             if(authorised.authorised) {
-                const tags = await mongoDb.collection(tagCollection).find({}).toArray();
+                const tags = await mongoDb.collection(collection.tags).find({}).toArray();
                 if (tags) {
                     return { success: true, tags}; ;
                 } else {
@@ -145,8 +303,8 @@ export class UserGroup {
             console.log('userId: ', userId)
             console.log('userGroupId: ', userGroupId)
             const mongoDb = await connectDb();
-            const userGroup = await mongoDb.collection(userGroupCollection).findOne({_id: new ObjectId(userGroupId)});
-            const userGroupUser = await mongoDb.collection(userGroupUserCollection).findOne({userGroup: new ObjectId(userGroupId), user: new ObjectId(userId)});
+            const userGroup = await mongoDb.collection(collection.userGroups).findOne({_id: new ObjectId(userGroupId)});
+            const userGroupUser = await mongoDb.collection(collection.userGroupUsers).findOne({userGroup: new ObjectId(userGroupId), user: new ObjectId(userId)});
             console.log('userGroupUser: ', userGroupUser)
             console.log('userGroup: ', userGroup)
             if (userGroupUser && userGroup) {
@@ -168,7 +326,7 @@ export class UserGroup {
     async actionUserGroupRoleAuthorised(resource, action, userId, userGroupId): Promise<{authorised: boolean, requiredRoles?: string[], message?: string}> {
         try {
             const mongoDb = await connectDb();
-            const userGroupRoles = await mongoDb.collection(actionRolesCollection).findOne({type: resource});
+            const userGroupRoles = await mongoDb.collection(collection.actionRoles).findOne({type: resource});
             const requiredUserGroupRoles = userGroupRoles[action];
             const userGroupRole = await this.getUserGroupRole(userId, userGroupId);
             const authorised = utils.isRoleInRolesRequired(userGroupRole, requiredUserGroupRoles);
@@ -187,6 +345,7 @@ export class UserGroup {
             return {authorised: false};
         }
     }
+
 }
 
 

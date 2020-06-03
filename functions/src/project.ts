@@ -4,15 +4,13 @@ import { configs } from './config'
 import { error, connectDb } from './index';
 import { Auth } from './auth';
 import { UserGroup } from './userGroup';
-import { ObjectId } from 'mongodb';
+import { ObjectId, UpdateWriteOpResult } from 'mongodb';
 import { projectActions } from './roles';
+import { collection } from './db/collections';
 import * as _ from "lodash";
 
 const auth = new Auth();
 const userGroup = new UserGroup();
-const projectCollection = 'projects';
-const tagCollection = 'tags';
-const userGroupCollection = 'user-groups';
 
 export class Project {
     async get(projectId): Promise<{ success: boolean, project?: any, message?:string}> {
@@ -149,7 +147,6 @@ export class Project {
             if (projects) {
                 return {success: true, projects: projects}
             } else {
-                console.log('projects: err');
                 return {success: false }
             } 
             
@@ -168,12 +165,10 @@ export class Project {
             if (projects) {
                 return {success: true, projects: projects}
             } else {
-                console.log('projects: err');
                 return {success: false }
             } 
             
         } catch(err) {
-            error.log(`UserGroup.getAll Error`, err);
             return {success: false, message: `An Error Occurred`};
         }    
     }
@@ -183,10 +178,8 @@ export class Project {
             const projectRes = await this.get(projectId);
             const project = projectRes.project;
             const projectUserGroupId = project.userGroupId;
-            console.log('projectUserGroupId :', projectUserGroupId);
             const authorised = await auth.authorised('project', projectActions.canEdit, userId, projectUserGroupId);
-            console.log('authorised :', authorised);
-            if(authorised.authorised) {
+            if(authorised && authorised.authorised) {
                 const userGroupRole = await userGroup.getUserGroupRole(userId, projectUserGroupId);
                 if (userGroupRole) {
                     const projectActionAuthorised = await auth.getAuthActionsList(userGroupRole, 'project');
@@ -211,7 +204,7 @@ export class Project {
     async editName(userId, projectId, names): Promise<GetEditableProjectRes> {
         try {
             const mongoDb = await connectDb();
-            const project: any = await mongoDb.collection(projectCollection).findOne({_id: new ObjectId(projectId)}); 
+            const project: any = await mongoDb.collection(collection.projects).findOne({_id: new ObjectId(projectId)}); 
             if(project) {
                 const projectUserGroupId = project.userGroupId;
                 const authorised = await auth.authorised('project', projectActions.canEditName, userId, projectUserGroupId);
@@ -223,7 +216,7 @@ export class Project {
                                 nameUpdate.push(name)
                             }
                         });
-                        const updated = await mongoDb.collection(projectCollection).updateOne({_id: new ObjectId(projectId)}, {
+                        const updated = await mongoDb.collection(collection.projects).updateOne({_id: new ObjectId(projectId)}, {
                             name: nameUpdate,
                             updatedDate: new Date(), 
                             updatedBy: new ObjectId(userId)
@@ -251,7 +244,7 @@ export class Project {
     async editDesc(userId, projectId, descs): Promise<StandardResponse> {
         try {
             const mongoDb = await connectDb();
-            const project: any = await mongoDb.collection(projectCollection).findOne({_id: new ObjectId(projectId)}); 
+            const project: any = await mongoDb.collection(collection.projects).findOne({_id: new ObjectId(projectId)}); 
             if(project) {
                 const projectUserGroupId = project.userGroupId;
                 const authorised = await auth.authorised('project', projectActions.canEditDesc, userId, projectUserGroupId);
@@ -264,7 +257,7 @@ export class Project {
                             }
                         });
                         
-                        const updated = await mongoDb.collection(projectCollection).updateOne({_id: projectId}, {
+                        const updated = await mongoDb.collection(collection.projects).updateOne({_id: projectId}, {
                             desc: descUpdate, 
                             updatedDate: new Date(), 
                             updatedBy: userId
@@ -292,16 +285,16 @@ export class Project {
     async editUserGroup(userId: string, projectId: string, newUserGroupId: string): Promise<StandardResponse> {
         try {
             const mongoDb = await connectDb();
-            const newUserGroupDoc = await mongoDb.collection(userGroupCollection).findOne({_id: new ObjectId(newUserGroupId)}); 
+            const newUserGroupDoc = await mongoDb.collection(collection.userGroups).findOne({_id: new ObjectId(newUserGroupId)}); 
             if(newUserGroupDoc) {
-                const project: any = await mongoDb.collection(projectCollection).findOne({_id: new ObjectId(projectId)});
+                const project: any = await mongoDb.collection(collection.projects).findOne({_id: new ObjectId(projectId)});
                 if(project) {
                     const projectUserGroupId = project.userGroupId;
                     const currentUserGroupAuthorised = await auth.authorised('project', 'canChangeUserGroup', userId, projectUserGroupId);
                     const newUserGroupAuthorised = await auth.authorised('project', 'canChangeUserGroup', userId, newUserGroupId);
                     if(currentUserGroupAuthorised && newUserGroupAuthorised) {
                         if(currentUserGroupAuthorised.authorised && newUserGroupAuthorised.authorised) {
-                            const updated = await mongoDb.collection(projectCollection).updateOne({_id: new ObjectId(projectId)}, {
+                            const updated = await mongoDb.collection(collection.projects).updateOne({_id: new ObjectId(projectId)}, {
                                 $set: {
                                     userGroupId: new ObjectId(newUserGroupId), 
                                     updatedDate: new Date(), 
@@ -334,13 +327,13 @@ export class Project {
     async editPublished(userId, projectId, published: boolean): Promise<StandardResponse> {
         try {
             const mongoDb = await connectDb();
-            const project: any = await mongoDb.collection(projectCollection).find({_id: new ObjectId(projectId)}); 
+            const project: any = await mongoDb.collection(collection.projects).find({_id: new ObjectId(projectId)}); 
             if(project) {
                 const projectUserGroupId = project.userGroupId;
                 const userGroupAuthorised = await auth.authorised('project', 'canEditPublished', userId, projectUserGroupId);
                 if(userGroupAuthorised) {
                     if(userGroupAuthorised.authorised) {
-                        const updated = await mongoDb.collection(projectCollection).updateOne({ _id: new ObjectId(projectId) }, {
+                        const updated = await mongoDb.collection(collection.projects).updateOne({ _id: new ObjectId(projectId) }, {
                             $set: {
                                 published: published, 
                                 updatedDate: new Date(), 
@@ -371,20 +364,20 @@ export class Project {
         try {
             console.log('Project.addTag: ', projectId, tagId, userId);
             const mongoDb = await connectDb();
-            const project = await mongoDb.collection(projectCollection).findOne({_id: new ObjectId(projectId)});
+            const project = await mongoDb.collection(collection.projects).findOne({_id: new ObjectId(projectId)});
             console.log('project :', project);
             const projectUserGroupId = project.userGroupId;
             const projectAuthorized = await auth.authorised('project', 'canAddTag', userId, projectUserGroupId);
             console.log('projectAuthorized :', projectAuthorized);
 
-            const tag = await mongoDb.collection(tagCollection).findOne({_id: new ObjectId(tagId)});
+            const tag = await mongoDb.collection(collection.tags).findOne({_id: new ObjectId(tagId)});
             console.log('tag :', tag);
             const tagUserGroupId = tag.userGroupId;
             const tagAuthorised = await auth.authorised('tag', 'canAddTagReference', userId, tagUserGroupId)
             console.log('tagAuthorised :', tagAuthorised);
 
             if (projectAuthorized.authorised && tagAuthorised.authorised) {
-                const updatedProject = await mongoDb.collection(projectCollection).updateOne({_id: new ObjectId(projectId)}, {
+                const updatedProject = await mongoDb.collection(collection.projects).updateOne({_id: new ObjectId(projectId)}, {
                     $addToSet: {
                         tags: new ObjectId(tagId)
                     },
@@ -411,12 +404,12 @@ export class Project {
         try {
             console.log('Project.removeTag: ', projectId, tagId, userId);
             const mongoDb = await connectDb();
-            const project = await mongoDb.collection(projectCollection).findOne({_id: new ObjectId(projectId)});
+            const project = await mongoDb.collection(collection.projects).findOne({_id: new ObjectId(projectId)});
             const projectUserGroupId = project.userGroupId;
             const projectAuthorized = await auth.authorised('project', projectActions.canDeleteTag, userId, projectUserGroupId);
 
             if (projectAuthorized.authorised) {
-                const updatedProject = await mongoDb.collection(projectCollection).updateOne({_id: new ObjectId(projectId)}, {
+                const updatedProject = await mongoDb.collection(collection.projects).updateOne({_id: new ObjectId(projectId)}, {
                     $pull: {
                         tags: new ObjectId(tagId)
                     },
@@ -443,7 +436,7 @@ export class Project {
         try {
             console.log('Project.reorder: ', projectId, tagIds, userId);
             const mongoDb = await connectDb();
-            const project = await mongoDb.collection(projectCollection).findOne({_id: new ObjectId(projectId)});
+            const project = await mongoDb.collection(collection.projects).findOne({_id: new ObjectId(projectId)});
             console.log('project :', project);
             const oldOrder = project.tags;
             console.log('oldOrder :', oldOrder);
@@ -455,7 +448,7 @@ export class Project {
                 const same = _.isEmpty(_.xor(oldOrder, tagIds));  // check same elements
                 console.log('same :', same);
                 if (same) {
-                    const updatedProject = await mongoDb.collection(projectCollection).updateOne({_id: new ObjectId(projectId)}, {
+                    const updatedProject = await mongoDb.collection(collection.projects).updateOne({_id: new ObjectId(projectId)}, {
                         $set: {
                             tags: tagIds,
                             updated: new Date(),
@@ -541,7 +534,7 @@ export class Project {
     async getProject (projectId: string): Promise<any> {
         try {
             const mongoDb = await connectDb();
-            const project = await mongoDb.collection(projectCollection).findOne({_id: projectId});
+            const project = await mongoDb.collection(collection.projects).findOne({_id: projectId});
             if (project) {
                 return project
             } else {
@@ -560,21 +553,21 @@ export class Project {
     /**************************************************************************************/
     async updateOrCreateOne(project: ProjectWiki): Promise<ProjectUpdate> {
         try {
+            console.log('project: ', project);
+
             const projectId = this.generateProjectId(project);
             const mongoDb = await connectDb();
-            const userGroupId = await this.upsertUserGroup(project.organisation);
+            const userGroupId = await this.getUserGroupIdFromName(project.organisation);
             const projectToCreate = {
                 slug: projectId,        
                 published: false,
                 name: [{language: 'english', text: project.name}],
                 desc: [{language: 'english', text: project.desc}],
-                // imageUrl: project.imageUrl,
-                // projectUrl: project.projectUrl,
                 tags: [],
                 created: new Date(),
-                // updated: new Date()
             };
-            const proj = await mongoDb.collection('projects').updateOne(
+
+            const proj: UpdateWriteOpResult = await mongoDb.collection('projects').updateOne(
                 {slug: projectId}, 
                 {
                     $set: {
@@ -614,14 +607,33 @@ export class Project {
         }
     }
 
-    async upsertUserGroup(name): Promise<any> {
+    async getUserGroupIdFromName(name): Promise<string> {
+        try {
+            const mongoDb = await connectDb();
+            const existingUserGroup = await mongoDb.collection(collection.userGroups).findOne({ name: name });
+            if (existingUserGroup) {
+                return existingUserGroup._id;
+            } else {
+                const createdUserGroup = await this.upsertUserGroup(name);
+                if (createdUserGroup) {
+                    return createdUserGroup;
+                } else {
+                    return null
+                }
+            }
+        } catch (err) {
+            error.log('Project.getUserGroupIdFromName', err);
+            return null;
+        }
+    }
+
+    async upsertUserGroup(name): Promise<string> {
+        console.log('upsertUserGroup name :', name);
+
         const mongoDb = await connectDb();
-        const upsertedUserGroup = await mongoDb.collection(userGroupCollection).updateOne(
+        const upsertedUserGroup = await mongoDb.collection(collection.userGroups).updateOne(
             {name: name}, 
             {
-                $set:{
-                    updated: new Date()
-                },
                 $setOnInsert: {
                     created: new Date(),
                     open: false
@@ -632,11 +644,7 @@ export class Project {
         if (upsertedUserGroup && upsertedUserGroup.upsertedId) {
             console.log('upsertedUserGroup :', upsertedUserGroup);
             console.log('upsertedUserGroup.upsertedId :', upsertedUserGroup.upsertedId);
-            return upsertedUserGroup.upsertedId._id;
-        } else if (upsertedUserGroup && upsertedUserGroup.result.nModified === 1 ) {
-            const alreadyCreatedUserGroup = await mongoDb.collection(userGroupCollection).findOne({name: name});
-            console.log('alreadyCreatedUserGroup._id :', alreadyCreatedUserGroup._id);
-            return alreadyCreatedUserGroup._id;
+            return upsertedUserGroup.upsertedId._id.toString();
         } else {
             return null;
         }
@@ -750,24 +758,58 @@ export class Project {
         }
     }    
 
-    async updateAll(): Promise<any> {
+    async syncWithWikifactory(userId): Promise<any> {
         return new Promise( async (resolve, reject) => {
             try {
+                const startTime = new Date();
                 const projectWikis: ProjectWiki[] = await this.getAllFromWikifactory();
                 const array = []
                 projectWikis.forEach((project) => {
                     array.push(this.updateOrCreateOne(project));   
                 });
                 Promise.all(array)
-                    .then((res) => resolve(res))
-                    .catch((err) => {throw err})
-                
+                    .then( async (res) => {
+                        await this.createSyncReport(userId, startTime, new Date(), res);
+                        resolve(res);
+                    })
+                    .catch( async (err) => {
+                        await this.createSyncReport(userId, startTime, new Date(), {}, err);
+                        throw err
+                    });
             } catch(err) {
                 error.log('Project.updateAll', err);
                 reject(err);
             }
         })
     }
+
+    async createSyncReport(userId, start, end, result, err?): Promise<void> {
+        try {
+            const mongoDb = await connectDb();
+            await mongoDb.collection(collection.syncReports).insertOne({
+                target: 'wikifactory',
+                resource: 'projects',
+                userId,
+                start,
+                end, 
+                result,
+                error: err
+            });
+        } catch(err) {
+            error.log('Project.createSyncReport', err);
+        }
+    }
+
+    async getSyncReports(): Promise<{success: boolean, message?: string, syncReports?: any[]}> {
+        try {
+            const mongoDb = await connectDb();
+            const syncReports = await mongoDb.collection(collection.syncReports).find({}).toArray()
+            return {success: true,  syncReports};
+        } catch(err) {
+            return {success: false,  message: 'Failed to get Sync Reports'};
+        }
+    }
+    
 }
 
 interface ProjectUpdate {
