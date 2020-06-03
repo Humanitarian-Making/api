@@ -210,12 +210,11 @@ export class UserGroup {
             const authorised = await auth.authorised('user-group', userGroupActions.canDeleteUser, userId, userGroupId);
             if (authorised && authorised.authorised) {
                 const mongoDb = await connectDb();
-                const update = await mongoDb.collection(collection.userGroupUsers).remove(
+                const update = await mongoDb.collection(collection.userGroupUsers).deleteMany(
                     {
                         userGroup: new ObjectId(userGroupId), 
                         user: new ObjectId(removeUserId)
-                    }, 
-                    { single: false });
+                    });
                 console.log('update: ', update);
                 return { success: true}
             } else {
