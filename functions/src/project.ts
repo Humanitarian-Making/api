@@ -768,12 +768,12 @@ export class Project {
                     array.push(this.updateOrCreateOne(project));   
                 });
                 Promise.all(array)
-                    .then((res) => {
-                        this.createSyncReport(userId, startTime, new Date(), res);
+                    .then( async (res) => {
+                        await this.createSyncReport(userId, startTime, new Date(), res);
                         resolve(res);
                     })
-                    .catch((err) => {
-                        this.createSyncReport(userId, startTime, new Date(), {}, err);
+                    .catch( async (err) => {
+                        await this.createSyncReport(userId, startTime, new Date(), {}, err);
                         throw err
                     });
             } catch(err) {
@@ -786,7 +786,7 @@ export class Project {
     async createSyncReport(userId, start, end, result, err?): Promise<void> {
         try {
             const mongoDb = await connectDb();
-            mongoDb.collection(collection.syncReports).insertOne({
+            await mongoDb.collection(collection.syncReports).insertOne({
                 target: 'wikifactory',
                 resource: 'projects',
                 userId,
