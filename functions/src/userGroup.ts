@@ -128,6 +128,33 @@ export class UserGroup {
         }    
     }
 
+    async getLocations(userId, userGroupId): Promise<any> {
+        try {
+            const authorised = await auth.authorised('user-group', userGroupActions.canViewLocations, userId, userGroupId);
+            console.log('authorised :', authorised);
+            if (authorised && authorised.authorised) {
+                const mongoDb = await connectDb();
+                const userGroup = await mongoDb.collection(collection.userGroups).findOne({_id: new ObjectId(userGroupId)});
+                const locations = await mongoDb.collection(collection.locations).find({ userGroupId : new ObjectId(userGroupId) }).toArray(); 
+                if (userGroup) {
+                    const userGroupLocations = {
+                        ... userGroup, 
+                        locations
+                    }
+                    return { success: true, userGroupLocations }; ;
+                } else {
+                    console.log('tags: err');
+                    return { success: false, message: `Failed to load tags`};
+                }
+            } else {
+                return {success: false, message: `Unauthorised to view User Group Users`};
+            }
+        } catch(err) {
+            error.log(`UserGroup.getAll: userGroupId: ${userGroupId}`, err);
+            return {success: false, message: `UID: ${userGroupId}, Error Occurred`};
+        }    
+    }
+
     async addUser(userId: string, userGroupId: string, email: string, role: string): Promise<StandardResponse> {
         try {
             const authorised = await auth.authorised('user-group', userGroupActions.canAddUser, userId, userGroupId);

@@ -49,3 +49,21 @@ export const userGroupActions = {
     canViewLocations: 'canViewLocations',
     canViewResources: 'canViewResources'
 }
+
+export const locationsActions  = {
+    canEdit: 'canEdit',
+    canChangeUserGroup: 'canChangeUserGroup', 
+    canEditPublished: 'canEditPublished',
+    // name
+    canEditName: 'canEditName',
+    // desc
+    canEditDesc: 'canEditDesc',
+    canDeleteDesc: 'canDeleteDesc',
+    canAddDesc: 'canAddDesc', 
+    // tags
+    canEditTagOrder: 'canEditTagOrder', 
+    canAddTag: 'canAddTag', 
+    canDeleteTag: 'canDeleteTag',
+
+    canEditWebsite: 'canEditWebsite'
+}

@@ -192,4 +192,18 @@ routes.get('/user-group/:userGroupId/resources', [auth.authenticate], async (req
     }
 });
 
+routes.get('/user-group/:userGroupId/locations', [auth.authenticate], async (req: AuthenticatedReq, res) => {
+    try {
+        const userId = req.user._id;
+        const userGroupId = req.params.userGroupId;
+        const result = await userGroupClass.getLocations(userId, userGroupId);
+        if (result) {
+            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+        } 
+    } catch (error) {
+        console.error(error)
+        res.status(400).send({success: false, message: 'An Error Occurred'})
+    }
+});
+
 export const userGroupRoutes = routes;
