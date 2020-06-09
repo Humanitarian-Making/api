@@ -305,3 +305,18 @@ export interface UserUserGroup {
 export interface AuthenticatedReq extends express.Request {
     user: any
 }
+
+export interface AddResource {
+    name: string,
+    desc: {
+        text: string,
+        language: string
+    }
+    type: ResourceType,
+    resourceUrl: string,
+}
+
+export enum ResourceType {
+    challenge = 'challenge',
+    info = 'info'
+}

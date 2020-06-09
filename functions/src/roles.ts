@@ -53,7 +53,6 @@ export const userGroupActions = {
 export const locationsActions  = {
     canEdit: 'canEdit',
     canChangeUserGroup: 'canChangeUserGroup', 
-    canEditPublished: 'canEditPublished',
     // name
     canEditName: 'canEditName',
     // desc
@@ -66,4 +65,25 @@ export const locationsActions  = {
     canDeleteTag: 'canDeleteTag',
 
     canEditWebsite: 'canEditWebsite'
+}
+
+export const resourceActions  = {
+    canAdd: 'canAdd',
+    canEdit: 'canEdit',
+    canChangeUserGroup: 'canChangeUserGroup', 
+    // name
+    canEditName: 'canEditName',
+    // desc
+    canEditDesc: 'canEditDesc',
+    canDeleteDesc: 'canDeleteDesc',
+    canAddDesc: 'canAddDesc', 
+    // tags
+    canEditTagOrder: 'canEditTagOrder', 
+    canAddTag: 'canAddTag', 
+    canDeleteTag: 'canDeleteTag',
+    // resource
+    canEditResource: 'canEditResource',
+    canDeleteResource: 'canDeleteResource',
+    // type
+    canEditType: 'canEditType'
 }
