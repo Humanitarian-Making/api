@@ -218,6 +218,63 @@ export class Tag {
         }
     }
 
+    async getSelectable(selectable: boolean): Promise<TagsRes> {
+        try {
+            const mongoDb = await connectDb();
+            const tags = await mongoDb.collection(collection.tags).aggregate(
+                [
+                    { 
+                        "$match" : { 
+                            "selectable" : selectable
+                        }
+                    }, 
+                    { 
+                        "$lookup" : { 
+                            "from" : "tags", 
+                            "localField" : "parent", 
+                            "foreignField" : "_id", 
+                            "as" : "parent"
+                        }
+                    }, 
+                    { 
+                        "$unwind" : { 
+                            "path" : "$parent", 
+                            "preserveNullAndEmptyArrays" : true
+                        }
+                    }, 
+                    { 
+                        "$unwind" : { 
+                            "path" : "$name", 
+                            "preserveNullAndEmptyArrays" : false
+                        }
+                    }, 
+                    { 
+                        "$project" : { 
+                            "_id" : 1.0, 
+                            "name" : 1.0, 
+                            "desc" : 1.0, 
+                            "parent" : { 
+                                "name" : 1.0, 
+                                "desc" : 1.0
+                            }
+                        }
+                    }
+                ], 
+                { 
+                    "allowDiskUse" : false
+                }
+            ).toArray();
+            if(tags) {
+                return {success: true, tags: tags};
+            } else {
+                return {success: false, message: 'tags Not Found'};
+            } 
+        } catch (err) {
+            error.log('Tag.getRootTags', err)
+            return { success: false, message: 'An Error Occurred'}
+        }
+    }
+
     async getRootTags(): Promise<TagsRes> {
         try {
             const mongoDb = await connectDb();
