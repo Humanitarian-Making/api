@@ -20,10 +20,11 @@ routes.get('/projects', async (req: AuthenticatedReq, res) => {
     }
 });
 
-routes.put('/projects/filter', async (req: AuthenticatedReq, res) => {
+routes.put('/projects/search', async (req: AuthenticatedReq, res) => {
     try {
-        const tags = req.body.tags
-        const result = await projectClass.filterByTags(tags);
+        const tags = req.body.tags;
+        const text = req.body.text;
+        const result = await projectClass.search(text, tags);
         if (result) {
             res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
         } 

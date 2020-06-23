@@ -261,7 +261,6 @@ export interface UpdateTagObject {
     desc: LanguageOption[];
 }
 
-
 export interface LanguageOption {
     language: string,
     text: string;
@@ -304,4 +303,37 @@ export interface UserUserGroup {
 }
 export interface AuthenticatedReq extends express.Request {
     user: any
+}
+
+export interface AddResource {
+    name: string,
+    desc: string,
+    type: ResourceType,
+    resourceUrl: string,
+}
+
+export enum ResourceType {
+    challenge = 'challenge',
+    info = 'info'
+}
+
+export interface Location {
+    _id: ObjectId;
+    name: string;
+    desc: LanguageOption[];
+    websiteUrl: string;
+    userGroupId: ObjectId;
+    tags: ObjectId[];
+    location: {
+        type: LocationType;
+        coordinates: [number, number];
+    },
+    created: Date;
+    createdBy: ObjectId,
+    updated: Date;
+    updatedBy: ObjectId
+}
+
+export enum LocationType {
+    Point = 'Point'
 }
