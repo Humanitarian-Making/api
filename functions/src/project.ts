@@ -156,12 +156,25 @@ export class Project {
         }    
     } 
 
-    async filterByTags(tags): Promise<{ success: boolean, projects?: any[], message?:string}> {
+    async search(text: string, tags: string[]): Promise<{ success: boolean, projects?: any[], message?:string}> {
         try {
             const mongoDb = await connectDb();
-            const projects = await mongoDb.collection('projects').find(
-                {tags: {$all: tags.map(x => new ObjectId(x))}})
-                .toArray();
+            const query = {};
+            if (text.length > 1) {
+                query['$text'] = {
+                    $search: text,
+                    $caseSensitive: false
+                }
+            }
+
+            if (tags.length) {
+                query['tags'] = {
+                    $all: tags.map(x => new ObjectId(x))
+                }
+            }
+            console.log('query :', query);
+
+            const projects = await mongoDb.collection('projects').find(query).toArray();
             if (projects) {
                 return {success: true, projects: projects}
             } else {
