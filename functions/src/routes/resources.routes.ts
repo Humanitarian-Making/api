@@ -7,11 +7,10 @@ const routes: express.Router = express.Router()
 const resource = new Resource()
 const auth = new Auth();
 
-routes.get('/user-group/:userGroupId/resource/newResource', [auth.authenticate], async (req: AuthenticatedReq, res) => {
+routes.get('/user-group/:userGroupId/resources', async (req, res) => {
     try {
-        const userId = req.user._id;
         const userGroupId = req.params.userGroupId;
-        const result = await resource.getNewResourceId(userId, userGroupId);
+        const result = await resource.getUserGroupResources(userGroupId);
         if (result) {
             res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
         }
@@ -21,13 +20,29 @@ routes.get('/user-group/:userGroupId/resource/newResource', [auth.authenticate],
     }
 });
 
-routes.post('/user-group/:userGroupId/resource/:resourceId', [auth.authenticate], async (req: AuthenticatedReq, res) => {
+
+routes.post('/user-group/:userGroupId/resource/add', [auth.authenticate], async (req: AuthenticatedReq, res) => {
+    try {
+        const userId = req.user._id;
+        const userGroupId = req.params.userGroupId;
+        const newResource = req.body.resource;
+        const result = await resource.add(userId, userGroupId, newResource);
+        if (result) {
+            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+        }
+    } catch (error) {
+        console.error(error)
+        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
+    }
+});
+
+
+routes.put('/user-group/:userGroupId/resource/:resourceId/delete', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
         const userGroupId = req.params.userGroupId;
         const resourceId = req.params.resourceId;
-        const newResource = req.body.resource;
-        const result = await resource.add(userId, userGroupId, resourceId, newResource);
+        const result = await resource.delete(userId, userGroupId, resourceId);
         if (result) {
             res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
         }
@@ -105,4 +120,4 @@ routes.put('/resource/:resourceId/desc/:descId/delete', [auth.authenticate], asy
     }
 });
 
-export const locationRoutes = routes;
+export const resourceRoutes = routes;

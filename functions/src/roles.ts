@@ -70,6 +70,7 @@ export const locationsActions  = {
 export const resourceActions  = {
     canAdd: 'canAdd',
     canEdit: 'canEdit',
+    canDelete: 'canDelete',
     canChangeUserGroup: 'canChangeUserGroup', 
     // name
     canEditName: 'canEditName',

@@ -12,6 +12,7 @@ import { projectRoutes } from './routes/project.routes'
 import { userGroupRoutes } from './routes/user-group.routes';
 import { userRoutes } from './routes/user.routes';
 import { tagRoutes } from './routes/tag.routes';
+import { resourceRoutes } from './routes/resources.routes';
 
 // classes
 import { userClass } from './user';
@@ -73,7 +74,8 @@ app.use(locationRoutes);
 app.use(projectRoutes);
 app.use(userGroupRoutes);
 app.use(userRoutes);
-app.use(tagRoutes)
+app.use(tagRoutes);
+app.use(resourceRoutes);
 
 
 //define google cloud function name

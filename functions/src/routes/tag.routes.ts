@@ -86,6 +86,18 @@ routes.get('/tag/:tagId', async (req: AuthenticatedReq, res) => {
     }
 });
 
+routes.get('/tags/selectable', async (req: AuthenticatedReq, res) => {
+    try {
+        const result = await tagClass.getSelectable(true);
+        if (result) {
+            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+        } 
+    } catch (error) {
+        console.error(error)
+        res.status(400).send({success: false, message: 'An Error Occurred'})
+    }
+});
+
 routes.get('/tag/:tagId/children', async (req: AuthenticatedReq, res) => {
     try {
         const tagId: string = req.params.tagId;

@@ -7,6 +7,29 @@ import { resourceActions } from "./roles";
 const auth = new Auth();
 
 export class Resource { 
+    async getUserGroupResources(userGroupId) {
+        try {
+            console.log('getUserGroupResources :', userGroupId);
+
+            const mongoDb = await connectDb();
+            const userGroup = await mongoDb.collection(collection.userGroups).findOne({_id: new ObjectId(userGroupId)});
+            console.log('userGroup :', userGroup);
+            const resources = await mongoDb.collection(collection.resources).find({ userGroupId : new ObjectId(userGroupId) }).toArray(); 
+            if (userGroup) {
+                const userGroupResources = {
+                    ... userGroup, 
+                    resources
+                }
+                return { success: true, userGroupResources }; ;
+            } else {
+                console.log('tags: err');
+                return { success: false, message: `An Error Occurred`};
+            }
+        } catch(err) {
+            return {success: false, message: `An Error Occurred`};
+        }
+    }
+
     async getNewResourceId(userId, userGroupId) {
         try {
             const authorised = await auth.authorised('resource', resourceActions.canAdd, userId, userGroupId);
@@ -20,21 +43,21 @@ export class Resource {
         }
     }
 
-    async add(userId, userGroupId, resourceId, newResource: AddResource ) {
+    async add(userId, userGroupId, newResource: AddResource ) {
         try {
             const mongoDb = await connectDb();
             const authorised = await auth.authorised('resource', resourceActions.canAdd, userId, userGroupId);
             if(authorised && authorised.authorised) {
-                const added = await mongoDb.collection(collection.resources).insertOne(
+                const added = await mongoDb.collection(collection.resources).find(
                     {
-                        _id: new ObjectId(resourceId),
+                        _id: new ObjectId(),
                         userGroupId: new ObjectId(userGroupId),
                         name: newResource.name,
                         desc: [
                             {
                                 _id: new ObjectId(), 
-                                text: newResource.desc.text,
-                                language: newResource.desc.language
+                                text: newResource.desc,
+                                language: 'english'
                             }
                         ], 
                         type: newResource.type,
@@ -57,7 +80,27 @@ export class Resource {
         } catch(err) {
             return {success: false, message: `An Error Occurred`};
         }
-     }
+    }
+
+    async delete(userId, userGroupId, resourceId ) {
+        try {
+            const mongoDb = await connectDb();
+            const authorised = await auth.authorised('resource', resourceActions.canDelete, userId, userGroupId);
+            if(authorised && authorised.authorised) {
+                const deleted = await mongoDb.collection(collection.resources).findOneAndDelete({_id: new ObjectId(resourceId)});
+                if(deleted){
+                    return {success: true};
+                } else {
+                    return {success: false, message: `userId: ${userId}, Error Occurred`};
+                }
+                
+            } else {
+                return {success: false, message: `Failed to get Authorisation`};
+            }
+        } catch(err) {
+            return {success: false, message: `An Error Occurred`};
+        }
+    }
 
     async editName (userId, userGroupId,resourceId, name): Promise<StandardResponse> {
         try {
