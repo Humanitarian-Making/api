@@ -156,6 +156,22 @@ export class Project {
         }    
     } 
 
+    async getFeatured(limit: number): Promise<{ success: boolean, projects?: any[], message?:string}> {
+        try {
+            const mongoDb = await connectDb();
+            const projects = await mongoDb.collection('projects').find({}).sort({created: 1}).limit(limit).toArray();
+            if (projects) {
+                return {success: true, projects: projects}
+            } else {
+                return {success: false }
+            } 
+            
+        } catch(err) {
+            error.log(`UserGroup.getAll Error`, err);
+            return {success: false, message: `An Error Occurred`};
+        }    
+    }
+
     async search(text: string, tags: string[]): Promise<{ success: boolean, projects?: any[], message?:string}> {
         try {
             const mongoDb = await connectDb();
