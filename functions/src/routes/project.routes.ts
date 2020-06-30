@@ -20,6 +20,19 @@ routes.get('/projects', async (req: AuthenticatedReq, res) => {
     }
 });
 
+routes.get('/projects/featured/limit/:limit', async (req: AuthenticatedReq, res) => {
+    try {
+        const limit = Number(req.params.limit);
+        const result = await projectClass.getFeatured(limit);
+        if (result) {
+            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+        } 
+    } catch (error) {
+        console.error(error)
+        res.status(400).send({success: false, message: 'An Error Occurred'})
+    }
+});
+
 routes.put('/projects/search', async (req: AuthenticatedReq, res) => {
     try {
         const tags = req.body.tags;
