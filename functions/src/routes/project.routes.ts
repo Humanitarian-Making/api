@@ -74,12 +74,14 @@ routes.get('/project/:projectId/edit', [auth.authenticate], async (req: Authenti
     }
 });
 
-routes.put('/project/:projectId/edit/name', [auth.authenticate], async (req: AuthenticatedReq, res) => {
+routes.put('/user-group/:userGroupId/project/:projectId/edit/name/language/:language', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
+        const userGroupId = req.params.userGroupId;
         const projectId = req.params.projectId;
-        const name = req.body.name;
-        const result = await projectClass.editName(userId, projectId, name);
+        const language = req.params.language;
+        const text = req.body.text;
+        const result = await projectClass.editName(userId, userGroupId, projectId, language, text);
         if (result) {
             res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
         }
@@ -89,27 +91,14 @@ routes.put('/project/:projectId/edit/name', [auth.authenticate], async (req: Aut
     }
 });
 
-routes.put('/project/:projectId/edit/desc', [auth.authenticate], async (req: AuthenticatedReq, res) => {
+routes.put('/user-group/:userGroupId/project/:projectId/edit/desc/language/:language', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
+        const userGroupId = req.params.userGroupId;
         const projectId = req.params.projectId;
-        const desc = req.body.desc;
-        const result = await projectClass.editDesc(userId, projectId, desc);
-        if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
-        }
-    } catch (error) {
-        console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
-    }
-});
-
-routes.put('/project/:projectId/edit/published', [auth.authenticate], async (req: AuthenticatedReq, res) => {
-    try {
-        const userId = req.user._id;
-        const projectId = req.params.projectId;
-        const desc = req.body.desc;
-        const result = await projectClass.editDesc(userId, projectId, desc);
+        const language = req.params.language;
+        const text = req.body.text;
+        const result = await projectClass.editDesc(userId, userGroupId, projectId, language, text);
         if (result) {
             res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
         }
@@ -125,6 +114,38 @@ routes.put('/project/:projectId/edit/userGroup', [auth.authenticate], async (req
         const projectId = req.params.projectId;
         const newUserGroupId = req.body.userGroupId;
         const result = await projectClass.editUserGroup(userId, projectId, newUserGroupId);
+        if (result) {
+            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+        }
+    } catch (error) {
+        console.error(error)
+        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
+    }
+});
+
+routes.put('/user-group/:userGroupId/project/:projectId/edit/published', [auth.authenticate], async (req: AuthenticatedReq, res) => {
+    try {
+        const userId = req.user._id;
+        const userGroupId = req.params.userGroupId;
+        const projectId = req.params.projectId;
+        const published = req.body.state;
+        const result = await projectClass.editPublished(userId, userGroupId, projectId, published);
+        if (result) {
+            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+        }
+    } catch (error) {
+        console.error(error)
+        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
+    }
+});
+
+routes.put('/user-group/:userGroupId/project/:projectId/edit/featured', [auth.authenticate], async (req: AuthenticatedReq, res) => {
+    try {
+        const userId = req.user._id;
+        const userGroupId = req.params.userGroupId;
+        const projectId = req.params.projectId;
+        const featured = req.body.state;
+        const result = await projectClass.editFeatured(userId, userGroupId, projectId, featured);
         if (result) {
             res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
         }

@@ -166,10 +166,11 @@ routes.get('/user-group/:userGroupId/tags', [auth.authenticate], async (req: Aut
     }
 });
 
-routes.get('/user-group/:userGroupId/projects', [auth.authenticate], async (req: AuthenticatedReq, res) => {
+routes.get('/user-group/:userGroupId/projects', async (req: AuthenticatedReq, res) => {
     try {
-        const userId = req.user._id;
-        const result = await userGroupClass.projects(userId);
+        // const userId = req.user._id;
+        const userGroupId = req.params.userGroupId;
+        const result = await userGroupClass.projects(userGroupId);
         if (result) {
             res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
         } 
