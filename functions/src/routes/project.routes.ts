@@ -108,6 +108,22 @@ routes.put('/user-group/:userGroupId/project/:projectId/edit/desc/language/:lang
     }
 });
 
+routes.put('/user-group/:userGroupId/project/:projectId/edit/projectUrl', [auth.authenticate], async (req: AuthenticatedReq, res) => {
+    try {
+        const userId = req.user._id;
+        const userGroupId = req.params.userGroupId;
+        const projectId = req.params.projectId;
+        const projectUrl = req.body.text;
+        const result = await projectClass.editProjectUrl(userId, userGroupId, projectId, projectUrl);
+        if (result) {
+            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+        }
+    } catch (error) {
+        console.error(error)
+        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
+    }
+});
+
 routes.put('/project/:projectId/edit/userGroup', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;

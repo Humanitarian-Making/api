@@ -21,12 +21,13 @@ routes.put('/location/nearby', async (req: AuthenticatedReq, res) => {
     }
 });
 
-routes.put('/location/:locationId/name/:name', [auth.authenticate], async (req: AuthenticatedReq, res) => {
+routes.put('/user-group/:userGroupId/location/:locationId/edit/name', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
+        const userGroupId = req.params.userGroupId;
         const locationId = req.params.locationId;
-        const name = req.params.name;
-        const result = await location.editName(userId,locationId, name);
+        const name = req.body.text;
+        const result = await location.editName(userId, userGroupId, locationId, name);
         if (result) {
             res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
         }
@@ -36,12 +37,13 @@ routes.put('/location/:locationId/name/:name', [auth.authenticate], async (req: 
     }
 });
 
-routes.put('/location/:locationId/website', [auth.authenticate], async (req: AuthenticatedReq, res) => {
+routes.put('/user-group/:userGroupId/location/:locationId/edit/website', [auth.authenticate], async (req: AuthenticatedReq, res) => {
     try {
         const userId = req.user._id;
+        const userGroupId = req.params.userGroupId;
         const locationId = req.params.locationId;
-        const websiteUrl = req.body.websiteUrl;
-        const result = await location.editWebsite(userId,locationId, websiteUrl);
+        const websiteUrl = req.body.text;
+        const result = await location.editWebsite(userId, userGroupId, locationId, websiteUrl);
         if (result) {
             res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
         }

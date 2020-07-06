@@ -230,7 +230,7 @@ export class Project {
         }
     }
 
-    async editName(userId: string, userGroupId: string, projectId: string, language: string, text: string): Promise<GetEditableProjectRes> {
+    async editName(userId: string, userGroupId: string, projectId: string, language: string, text: string): Promise<StandardResponse> {
         try {
             const mongoDb = await connectDb();
             const authorised = await auth.authorised('project', projectActions.canEditName, userId, userGroupId);
@@ -264,7 +264,7 @@ export class Project {
         }
     }
 
-    async editDesc(userId: string, userGroupId: string, projectId: string, language: string, text: string): Promise<GetEditableProjectRes> {
+    async editDesc(userId: string, userGroupId: string, projectId: string, language: string, text: string): Promise<StandardResponse> {
         try {
             const mongoDb = await connectDb();
             const authorised = await auth.authorised('project', projectActions.canEditDesc, userId, userGroupId);
@@ -294,6 +294,35 @@ export class Project {
             }
         } catch (err) {
             error.log(`Project.editDesc: userId: ${userId}, projectId: ${projectId}, name: ${text}`, err);
+            return { success: false, message: `userId: ${userId}, Error Occurred` };
+        }
+    }
+
+    async editProjectUrl(userId: string, userGroupId: string, projectId: string, projectUrl: string): Promise<StandardResponse> {
+        try {
+            const mongoDb = await connectDb();
+            const authorised = await auth.authorised('project', projectActions.canEditName, userId, userGroupId); 
+            if (authorised && authorised.authorised) {
+                const updated = await mongoDb.collection(collection.projects).updateOne(
+                { 
+                    _id: new ObjectId(projectId)
+                }, {
+                    $set: {
+                        projectUrl,
+                        updatedDate: new Date(),
+                        updatedBy: new ObjectId(userId)
+                    }
+                })
+                if (updated && updated.modifiedCount > 0) {
+                    return { success: true };
+                } else {
+                    return { success: false, message: `userId: ${userId}, Error Occurred` };
+                }
+            } else {
+                return { success: false, message: `Unauthorised` };
+            }
+        } catch (err) {
+            error.log(`Project.editDesc: userId: ${userId}, projectId: ${projectId}, name: ${projectUrl}`, err);
             return { success: false, message: `userId: ${userId}, Error Occurred` };
         }
     }
