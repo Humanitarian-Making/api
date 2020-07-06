@@ -12,7 +12,7 @@ routes.get('/projects', async (req: AuthenticatedReq, res) => {
     try {
         const result = await projectClass.getAll();
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         } 
     } catch (error) {
         console.error(error)
@@ -25,7 +25,7 @@ routes.get('/projects/featured/limit/:limit', async (req: AuthenticatedReq, res)
         const limit = Number(req.params.limit);
         const result = await projectClass.getFeatured(limit);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         } 
     } catch (error) {
         console.error(error)
@@ -39,7 +39,7 @@ routes.put('/projects/search', async (req: AuthenticatedReq, res) => {
         const text = req.body.text;
         const result = await projectClass.search(text, tags);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         } 
     } catch (error) {
         console.error(error)
@@ -52,11 +52,11 @@ routes.get('/project/:projectId', async (req, res) => {
         const projectId = req.params.projectId;
         const result = await projectClass.get(projectId);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         }
     } catch (error) {
         console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
+        res.status(400).send({success: false, message: 'An Error Occurred'})
     }
 });
 
@@ -66,11 +66,11 @@ routes.get('/project/:projectId/edit', [auth.authenticate], async (req: Authenti
         const projectId = req.params.projectId;
         const result = await projectClass.getEditable(userId, projectId);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         }
     } catch (error) {
         console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
+        res.status(400).send({success: false, message: 'An Error Occurred'})
     }
 });
 
@@ -83,11 +83,11 @@ routes.put('/user-group/:userGroupId/project/:projectId/edit/name/language/:lang
         const text = req.body.text;
         const result = await projectClass.editName(userId, userGroupId, projectId, language, text);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         }
     } catch (error) {
         console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
+        res.status(400).send({success: false, message: 'An Error Occurred'})
     }
 });
 
@@ -100,11 +100,11 @@ routes.put('/user-group/:userGroupId/project/:projectId/edit/desc/language/:lang
         const text = req.body.text;
         const result = await projectClass.editDesc(userId, userGroupId, projectId, language, text);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         }
     } catch (error) {
         console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
+        res.status(400).send({success: false, message: 'An Error Occurred'})
     }
 });
 
@@ -116,11 +116,11 @@ routes.put('/user-group/:userGroupId/project/:projectId/edit/projectUrl', [auth.
         const projectUrl = req.body.text;
         const result = await projectClass.editProjectUrl(userId, userGroupId, projectId, projectUrl);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         }
     } catch (error) {
         console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
+        res.status(400).send({success: false, message: 'An Error Occurred'})
     }
 });
 
@@ -131,11 +131,11 @@ routes.put('/project/:projectId/edit/userGroup', [auth.authenticate], async (req
         const newUserGroupId = req.body.userGroupId;
         const result = await projectClass.editUserGroup(userId, projectId, newUserGroupId);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         }
     } catch (error) {
         console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
+        res.status(400).send({success: false, message: 'An Error Occurred'})
     }
 });
 
@@ -147,11 +147,11 @@ routes.put('/user-group/:userGroupId/project/:projectId/edit/published', [auth.a
         const published = req.body.state;
         const result = await projectClass.editPublished(userId, userGroupId, projectId, published);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         }
     } catch (error) {
         console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
+        res.status(400).send({success: false, message: 'An Error Occurred'})
     }
 });
 
@@ -163,11 +163,11 @@ routes.put('/user-group/:userGroupId/project/:projectId/edit/featured', [auth.au
         const featured = req.body.state;
         const result = await projectClass.editFeatured(userId, userGroupId, projectId, featured);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         }
     } catch (error) {
         console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
+        res.status(400).send({success: false, message: 'An Error Occurred'})
     }
 });
 
@@ -181,7 +181,7 @@ routes.put('/project/:projectId/tag/:tagId/add', [auth.authenticate], async (req
         console.log('/project/{projectId}/addTag: ', userId, tagId, userId);
         const addTagToProjectRes = await projectClass.addTag(projectId, tagId, userId);
         if (addTagToProjectRes) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(addTagToProjectRes);
+            res.status(200).send(addTagToProjectRes);
         }
     } catch (error) {
         console.error(error)
@@ -196,7 +196,7 @@ routes.put('/project/:projectId/tag/:tagId/remove', [auth.authenticate], async (
         const projectId = req.params.projectId;
         const result = await projectClass.removeTag(projectId, tagId, userId);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         }
     } catch (error) {
         console.error(error)
@@ -211,7 +211,7 @@ routes.put('/project/:projectId/tags/reorder', [auth.authenticate], async (req: 
         const projectId = req.params.projectId;
         const result = await projectClass.reorderTags(projectId, tags, userId);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         }
     } catch (error) {
         console.error(error)
@@ -223,9 +223,9 @@ routes.get('/sync/projects', [auth.authenticate], async (req: AuthenticatedReq, 
     try {
         const synced =  await projectClass.syncWithWikifactory(req.user._id);
         if (synced) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(synced);
+            res.status(200).send(synced);
         } else {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send(synced);
+            res.status(400).send(synced);
         }
     } catch (error) {
         console.error(error)
@@ -237,9 +237,9 @@ routes.get('/sync/reports', [auth.authenticate], async (req: AuthenticatedReq, r
     try {
         const synced =  await projectClass.getSyncReports();
         if (synced) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(synced);
+            res.status(200).send(synced);
         } else {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send(synced);
+            res.status(400).send(synced);
         }
     } catch (error) {
         console.error(error)

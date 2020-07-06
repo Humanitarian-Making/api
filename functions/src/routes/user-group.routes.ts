@@ -12,7 +12,7 @@ routes.get('/user-groups', [auth.authenticate], async (req: AuthenticatedReq, re
         const userId = req.user._id;
         const result = await userGroupClass.getAll(userId);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         } 
     } catch (error) {
         console.error(error)
@@ -25,7 +25,7 @@ routes.post('/user-group/create', [auth.authenticate], async (req: Authenticated
         const userId = req.user._id;
         const result = await userGroupClass.create(userId);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         } 
     } catch (error) {
         console.error(error)
@@ -38,7 +38,7 @@ routes.get('/user-group/:userGroupId', async (req: AuthenticatedReq, res) => {
         const userGroupId = req.params.userGroupId;
         const result = await userGroupClass.get(userGroupId);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         } 
     } catch (error) {
         console.error(error)
@@ -52,7 +52,7 @@ routes.get('/user-group/:userGroupId/users', [auth.authenticate], async (req: Au
         const userGroupId = req.params.userGroupId;
         const result = await userGroupClass.getUsers(userId, userGroupId);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         } 
     } catch (error) {
         console.error(error)
@@ -69,7 +69,7 @@ routes.post('/user-group/:userGroupId/user/add', [auth.authenticate], async (req
             const role = req.body.role;
             const result = await userGroupClass.addUser(userId, userGroupId, email, role);
             if (result) {
-                res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+                res.status(200).send(result);
             } 
         } else {
             const err = new Error('No Req.user');
@@ -88,7 +88,7 @@ routes.put('/user-group/:userGroupId/user/:userId/remove', [auth.authenticate], 
         const removeUserId = req.params.userId;
         const result = await userGroupClass.removeUser(userId, userGroupId, removeUserId);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         } 
     } catch (error) {
         console.error(error)
@@ -104,7 +104,7 @@ routes.put('/user-group/:userGroupId/user/:userId/role/:role/edit', [auth.authen
         const role = req.params.role;
         const result = await userGroupClass.updateUserRole(userId, userGroupId, editUserId, role);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         } 
     } catch (error) {
         console.error(error)
@@ -117,7 +117,7 @@ routes.put('/user-group/:userGroupId/user/leave', [auth.authenticate], async (re
         const userId = req.user._id;
         const result = await userGroupClass.leave(userId);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         } 
     } catch (error) {
         console.error(error)
@@ -130,7 +130,7 @@ routes.post('/user-group/:userGroupId/request/join', [auth.authenticate], async 
         const userId = req.user._id;
         const result = await userGroupClass.requestJoin(userId);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         } 
     } catch (error) {
         console.error(error)
@@ -144,7 +144,7 @@ routes.put('/user-group/:userGroupId/request/:requestId', [auth.authenticate], a
         const requestId = req.params.requestId
         const result = await userGroupClass.requestResponse(userId, requestId);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         } 
     } catch (error) {
         console.error(error)
@@ -158,7 +158,7 @@ routes.get('/user-group/:userGroupId/tags', [auth.authenticate], async (req: Aut
         const userGroupId = req.params.userGroupId;
         const result = await userGroupClass.tags(userId, userGroupId);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         } 
     } catch (error) {
         console.error(error)
@@ -172,7 +172,7 @@ routes.get('/user-group/:userGroupId/projects', async (req: AuthenticatedReq, re
         const userGroupId = req.params.userGroupId;
         const result = await userGroupClass.projects(userGroupId);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         } 
     } catch (error) {
         console.error(error)
@@ -186,7 +186,7 @@ routes.get('/user-group/:userGroupId/locations', [auth.authenticate], async (req
         const userGroupId = req.params.userGroupId;
         const result = await userGroupClass.getLocations(userId, userGroupId);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         } 
     } catch (error) {
         console.error(error)

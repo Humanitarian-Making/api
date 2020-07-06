@@ -12,11 +12,11 @@ routes.get('/user-group/:userGroupId/resources', async (req, res) => {
         const userGroupId = req.params.userGroupId;
         const result = await resource.getUserGroupResources(userGroupId);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         }
     } catch (error) {
         console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
+        res.status(400).send({success: false, message: 'An Error Occurred'})
     }
 });
 
@@ -28,11 +28,11 @@ routes.post('/user-group/:userGroupId/resource/add', [auth.authenticate], async 
         const newResource = req.body.resource;
         const result = await resource.add(userId, userGroupId, newResource);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         }
     } catch (error) {
         console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
+        res.status(400).send({success: false, message: 'An Error Occurred'})
     }
 });
 
@@ -44,11 +44,11 @@ routes.put('/user-group/:userGroupId/resource/:resourceId/delete', [auth.authent
         const resourceId = req.params.resourceId;
         const result = await resource.delete(userId, userGroupId, resourceId);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         }
     } catch (error) {
         console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
+        res.status(400).send({success: false, message: 'An Error Occurred'})
     }
 });
 
@@ -60,11 +60,11 @@ routes.put('/user-group/:userGroupId/resource/:resourceId/name/:name', [auth.aut
         const name = req.params.name;
         const result = await resource.editName(userId, userGroupId, resourceId, name);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         }
     } catch (error) {
         console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
+        res.status(400).send({success: false, message: 'An Error Occurred'})
     }
 });
 
@@ -79,11 +79,11 @@ routes.put('/user-group/:userGroupId/resource/:resourceId/desc/:descId/edit', [a
         console.log('text :', text);
         const result = await resource.editDesc(userId, userGroupId, resourceId, descId, language, text);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         }
     } catch (error) {
         console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
+        res.status(400).send({success: false, message: 'An Error Occurred'})
     }
 });
 
@@ -96,11 +96,11 @@ routes.put('/user-group/:userGroupId/resource/:resourceId/desc/add', [auth.authe
         const text = req.body.text;
         const result = await resource.addDesc(userId, userGroupId, resourceId, language, text);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         }
     } catch (error) {
         console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
+        res.status(400).send({success: false, message: 'An Error Occurred'})
     }
 });
 
@@ -112,11 +112,11 @@ routes.put('/resource/:resourceId/desc/:descId/delete', [auth.authenticate], asy
         const descId = req.params.descId;
         const result = await resource.deleteDesc(userId, userGroupId, resourceId, descId);
         if (result) {
-            res.set({ 'Access-Control-Allow-Origin': '*' }).status(200).send(result);
+            res.status(200).send(result);
         }
     } catch (error) {
         console.error(error)
-        res.set({ 'Access-Control-Allow-Origin': '*' }).status(400).send({success: false, message: 'An Error Occurred'})
+        res.status(400).send({success: false, message: 'An Error Occurred'})
     }
 });
 
