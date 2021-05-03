@@ -4,7 +4,7 @@ import { SustainabilityReview, SustainabilityReviewUpdate } from '../sustainabil
 const routes: express.Router = express.Router()
 const sustainabilityReview = new SustainabilityReview
 
-routes.post('sustainability-review/create', async (req, res) => {
+routes.post('/sustainability-review/create', async (req, res) => {
     try {
         const userId = req.body && req.body.userId ? req.body.userId : null;
         const result = await sustainabilityReview.create(userId);
@@ -17,7 +17,7 @@ routes.post('sustainability-review/create', async (req, res) => {
     }
 });
 
-routes.get('sustainability-review/:sustainabilityReviewId', async (req, res) => {
+routes.get('/sustainability-review/:sustainabilityReviewId', async (req, res) => {
     try {
         const reviewId = req.params.sustainabilityReviewId;
         if (reviewId) {
@@ -36,7 +36,7 @@ routes.get('sustainability-review/:sustainabilityReviewId', async (req, res) => 
     }
 });
 
-routes.post('sustainability-review/:sustainabilityReviewId/update', async (req, res) => {
+routes.post('/sustainability-review/:sustainabilityReviewId/update', async (req, res) => {
     try {
         const reviewId = req.params.sustainabilityReviewId;
         console.log('reviewId: ', reviewId);
@@ -53,4 +53,18 @@ routes.post('sustainability-review/:sustainabilityReviewId/update', async (req, 
     }
 });
 
+
+routes.get('/sustainability-review/user/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        console.log('userId: ', userId);
+        // Still to do
+        res.status(200).send(
+            {success: true, review: []}
+        );
+    } catch (error) {
+        console.error(error)
+        res.status(400).send({success: false, message: 'An Error Occurred'})
+    }
+});
 export const sustainabilityReviewRoutes = routes;
