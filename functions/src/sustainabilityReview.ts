@@ -64,6 +64,7 @@ export class SustainabilityReview {
 
     async update (reviewId: string, userUpdate: SustainabilityReviewUpdate) {
         try {
+            // todo: add in check that update in by same user as created review
             console.log('reviewId: ', reviewId);
             const mongoDb = await connectDb();
             const update = {

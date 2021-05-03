@@ -17,7 +17,7 @@ jobs:
         run: cd functions && npm install
       - name: Build
         run: cd functions && npm run build
-      - name: Deploy angular app to Firebase
+      - name: Deploy to Firebase functions
         uses: w9jds/firebase-action@master
         with:
           args: deploy --only functions --project prod 
