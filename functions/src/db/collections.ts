@@ -7,5 +7,6 @@ export const collection = {
     users: 'users',
     locations: 'locations',
     resources: 'resources',
-    syncReports: 'sync-reports'
+    syncReports: 'sync-reports',
+    sustainabilityReview: 'sustainability-reviews'
 }

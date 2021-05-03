@@ -13,6 +13,7 @@ import { userGroupRoutes } from './routes/user-group.routes';
 import { userRoutes } from './routes/user.routes';
 import { tagRoutes } from './routes/tag.routes';
 import { resourceRoutes } from './routes/resources.routes';
+import { sustainabilityReviewRoutes } from './routes/sustainabilityReview.routes'
 
 // classes
 import { userClass } from './user';
@@ -82,7 +83,7 @@ app.use(userGroupRoutes);
 app.use(userRoutes);
 app.use(tagRoutes);
 app.use(resourceRoutes);
-
+app.use(sustainabilityReviewRoutes);
 
 //define google cloud function name
 export const api = functions.https.onRequest(main);
