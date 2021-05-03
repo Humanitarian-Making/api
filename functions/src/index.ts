@@ -69,6 +69,12 @@ main.use('/v1', app);
 main.use(express.json());
 main.use(express.urlencoded());
 
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*")
+    next()
+});
+ 
+
 // routes
 app.use(locationRoutes);
 app.use(projectRoutes);

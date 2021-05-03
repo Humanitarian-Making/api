@@ -304,13 +304,139 @@ export class UserGroup {
         }
     }
 
-    async projects(uid?): Promise<{ success: boolean, projects?: [],message?:string}> {
+    async projects(userGroupId): Promise<{ success: boolean, userGroupProjects?: any[], message?:string}> {
         try {
-            // public
-            return { success: true, projects: [] }
+            const mongoDb = await connectDb();
+            const userGroup = await mongoDb.collection(collection.userGroups).findOne({_id: new ObjectId(userGroupId)});
+            const projects = await mongoDb.collection('projects').aggregate([
+                    { 
+                        "$match" : { 
+                            "userGroupId" : new ObjectId(userGroupId)
+                        }
+                    }, 
+                    { 
+                        "$lookup" : { 
+                            "from" : "tags", 
+                            "localField" : "tags", 
+                            "foreignField" : "_id", 
+                            "as" : "tags"
+                        }
+                    }, 
+                    { 
+                        "$unwind" : { 
+                            "path" : "$tags", 
+                            "preserveNullAndEmptyArrays" : true
+                        }
+                    }, 
+                    { 
+                        "$lookup" : { 
+                            "from" : "tags", 
+                            "localField" : "tags.parent", 
+                            "foreignField" : "_id", 
+                            "as" : "tags.parent"
+                        }
+                    }, 
+                    { 
+                        "$unwind" : { 
+                            "path" : "$tags.parent", 
+                            "preserveNullAndEmptyArrays" : true
+                        }
+                    }, 
+                    { 
+                        "$group" : { 
+                            "_id" : "$_id", 
+                            "tags" : { 
+                                "$push" : "$tags"
+                            }, 
+                            "name" : { 
+                                "$first" : "$name"
+                            }, 
+                            "userGroupId" : { 
+                                "$first" : "$userGroupId"
+                            }, 
+                            "created" : { 
+                                "$first" : "$created"
+                            }, 
+                            "updated" : { 
+                                "$first" : "$updated"
+                            }, 
+                            "updatedBy" : { 
+                                "$first" : "$updatedBy"
+                            }, 
+                            "desc" : { 
+                                "$first" : "$desc"
+                            }, 
+                            "imageUrl" : { 
+                                "$first" : "$imageUrl"
+                            }, 
+                            "projectUrl" : { 
+                                "$first" : "$projectUrl"
+                            },
+                            "published" : { 
+                                "$first" : "$published"
+                            },
+                            "featured" : { 
+                                "$first" : "$featured"
+                            }
+                        }
+                    }, 
+                    { 
+                        "$project" : { 
+                            "_id" : 1.0, 
+                            "tags" : { 
+                                "_id" : 1.0, 
+                                "name" : 1.0, 
+                                "parent" : { 
+                                    "_id" : 1.0, 
+                                    "name" : 1.0
+                                }
+                            }, 
+                            "name" : 1.0, 
+                            "userGroupId" : 1.0, 
+                            "created" : 1.0, 
+                            "updated" : 1.0, 
+                            "updatedBy" : 1.0, 
+                            "desc" : 1.0, 
+                            "imageUrl" : 1.0,
+                            "projectUrl" : 1.0,  
+                            "published" : 1.0,
+                            "featured" : 1.0,
+
+                        }
+                    }, 
+                    { 
+                        "$lookup" : { 
+                            "from" : "user-groups", 
+                            "localField" : "userGroupId", 
+                            "foreignField" : "_id", 
+                            "as" : "userGroup"
+                        }
+                    }, 
+                    { 
+                        "$unwind" : { 
+                            "path" : "$userGroup", 
+                            "preserveNullAndEmptyArrays" : true
+                        }
+                    },
+                    { "$sort" : { created : -1 } }
+                ], 
+                { 
+                    "allowDiskUse" : false
+                }
+            ).toArray();
+            if (userGroup) {
+                const userGroupProjects = {
+                    ... userGroup, 
+                    projects
+                }
+                return { success: true, userGroupProjects }; ;
+            } else {
+                console.log('tags: err');
+                return { success: false, message: `Failed to load tags`};
+            }
         } catch(err) {
-            error.log(`UserGroup.getAll: uid: ${uid}`, err);
-            return {success: false, message: `UID: ${uid}, Error Occurred`};
+            error.log(`UserGroup.getAll: uid: ${userGroupId}`, err);
+            return {success: false, message: `UID: ${userGroupId}, Error Occurred`};
         }    
     }
 

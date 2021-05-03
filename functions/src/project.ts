@@ -1,5 +1,5 @@
 import { request } from 'graphql-request';
-import { ProjectWiki, EditableProject, GetEditableProjectRes,  StandardResponse } from './interfaces';
+import { ProjectWiki, EditableProject, GetEditableProjectRes, StandardResponse } from './interfaces';
 import { configs } from './config'
 import { error, connectDb } from './index';
 import { Auth } from './auth';
@@ -13,166 +13,166 @@ const auth = new Auth();
 const userGroup = new UserGroup();
 
 export class Project {
-    async get(projectId): Promise<{ success: boolean, project?: any, message?:string}> {
+    async get(projectId): Promise<{ success: boolean, project?: any, message?: string }> {
         try {
             const mongoDb = await connectDb();
             const projects = await mongoDb.collection('projects').aggregate(
                 [
-                    { 
-                        "$match" : { 
-                            "_id" : new ObjectId(projectId)
+                    {
+                        "$match": {
+                            "_id": new ObjectId(projectId)
                         }
-                    }, 
-                    { 
-                        "$lookup" : { 
-                            "from" : "tags", 
-                            "localField" : "tags", 
-                            "foreignField" : "_id", 
-                            "as" : "tags"
+                    },
+                    {
+                        "$lookup": {
+                            "from": "tags",
+                            "localField": "tags",
+                            "foreignField": "_id",
+                            "as": "tags"
                         }
-                    }, 
-                    { 
-                        "$unwind" : { 
-                            "path" : "$tags", 
-                            "preserveNullAndEmptyArrays" : true
+                    },
+                    {
+                        "$unwind": {
+                            "path": "$tags",
+                            "preserveNullAndEmptyArrays": true
                         }
-                    }, 
-                    { 
-                        "$lookup" : { 
-                            "from" : "tags", 
-                            "localField" : "tags.parent", 
-                            "foreignField" : "_id", 
-                            "as" : "tags.parent"
+                    },
+                    {
+                        "$lookup": {
+                            "from": "tags",
+                            "localField": "tags.parent",
+                            "foreignField": "_id",
+                            "as": "tags.parent"
                         }
-                    }, 
-                    { 
-                        "$unwind" : { 
-                            "path" : "$tags.parent", 
-                            "preserveNullAndEmptyArrays" : true
+                    },
+                    {
+                        "$unwind": {
+                            "path": "$tags.parent",
+                            "preserveNullAndEmptyArrays": true
                         }
-                    }, 
-                    { 
-                        "$group" : { 
-                            "_id" : "$_id", 
-                            "tags" : { 
-                                "$push" : "$tags"
-                            }, 
-                            "name" : { 
-                                "$first" : "$name"
-                            }, 
-                            "userGroupId" : { 
-                                "$first" : "$userGroupId"
-                            }, 
-                            "created" : { 
-                                "$first" : "$created"
-                            }, 
-                            "updated" : { 
-                                "$first" : "$updated"
-                            }, 
-                            "updatedBy" : { 
-                                "$first" : "$updatedBy"
-                            }, 
-                            "desc" : { 
-                                "$first" : "$desc"
-                            }, 
-                            "imageUrl" : { 
-                                "$first" : "$imageUrl"
-                            }, 
-                            "projectUrl" : { 
-                                "$first" : "$projectUrl"
+                    },
+                    {
+                        "$group": {
+                            "_id": "$_id",
+                            "tags": {
+                                "$push": "$tags"
                             },
-                            "published" : { 
-                                "$first" : "$published"
+                            "name": {
+                                "$first": "$name"
+                            },
+                            "userGroupId": {
+                                "$first": "$userGroupId"
+                            },
+                            "created": {
+                                "$first": "$created"
+                            },
+                            "updated": {
+                                "$first": "$updated"
+                            },
+                            "updatedBy": {
+                                "$first": "$updatedBy"
+                            },
+                            "desc": {
+                                "$first": "$desc"
+                            },
+                            "imageUrl": {
+                                "$first": "$imageUrl"
+                            },
+                            "projectUrl": {
+                                "$first": "$projectUrl"
+                            },
+                            "published": {
+                                "$first": "$published"
                             }
                         }
-                    }, 
-                    { 
-                        "$project" : { 
-                            "_id" : 1.0, 
-                            "tags" : { 
-                                "_id" : 1.0, 
-                                "name" : 1.0, 
-                                "parent" : { 
-                                    "_id" : 1.0, 
-                                    "name" : 1.0
+                    },
+                    {
+                        "$project": {
+                            "_id": 1.0,
+                            "tags": {
+                                "_id": 1.0,
+                                "name": 1.0,
+                                "parent": {
+                                    "_id": 1.0,
+                                    "name": 1.0
                                 }
-                            }, 
-                            "name" : 1.0, 
-                            "userGroupId" : 1.0, 
-                            "created" : 1.0, 
-                            "updated" : 1.0, 
-                            "updatedBy" : 1.0, 
-                            "desc" : 1.0, 
-                            "imageUrl" : 1.0,
-                            "projectUrl" : 1.0,  
-                            "published" : 1.0
+                            },
+                            "name": 1.0,
+                            "userGroupId": 1.0,
+                            "created": 1.0,
+                            "updated": 1.0,
+                            "updatedBy": 1.0,
+                            "desc": 1.0,
+                            "imageUrl": 1.0,
+                            "projectUrl": 1.0,
+                            "published": 1.0
                         }
-                    }, 
-                    { 
-                        "$lookup" : { 
-                            "from" : "user-groups", 
-                            "localField" : "userGroupId", 
-                            "foreignField" : "_id", 
-                            "as" : "userGroup"
+                    },
+                    {
+                        "$lookup": {
+                            "from": "user-groups",
+                            "localField": "userGroupId",
+                            "foreignField": "_id",
+                            "as": "userGroup"
                         }
-                    }, 
-                    { 
-                        "$unwind" : { 
-                            "path" : "$userGroup", 
-                            "preserveNullAndEmptyArrays" : true
+                    },
+                    {
+                        "$unwind": {
+                            "path": "$userGroup",
+                            "preserveNullAndEmptyArrays": true
                         }
                     }
-                ], 
-                { 
-                    "allowDiskUse" : false
+                ],
+                {
+                    "allowDiskUse": false
                 }
             ).toArray();
             if (projects) {
-                return {success: true, project: projects[0]}
+                return { success: true, project: projects[0] }
             } else {
                 console.log('projects: err');
-                return {success: false }
-            } 
-            
-        } catch(err) {
-            error.log(`UserGroup.getAll: projectId: ${projectId}`, err);
-            return {success: false, message: `projectId: ${projectId}, Error Occurred`};
-        }    
-    } 
+                return { success: false }
+            }
 
-    async getAll(): Promise<{ success: boolean, projects?: any[], message?:string}> {
+        } catch (err) {
+            error.log(`UserGroup.getAll: projectId: ${projectId}`, err);
+            return { success: false, message: `projectId: ${projectId}, Error Occurred` };
+        }
+    }
+
+    async getAll(): Promise<{ success: boolean, projects?: any[], message?: string }> {
         try {
             const mongoDb = await connectDb();
             const projects = await mongoDb.collection('projects').find({}).toArray();
             if (projects) {
-                return {success: true, projects: projects}
+                return { success: true, projects: projects }
             } else {
-                return {success: false }
-            } 
-            
-        } catch(err) {
-            error.log(`UserGroup.getAll Error`, err);
-            return {success: false, message: `An Error Occurred`};
-        }    
-    } 
+                return { success: false }
+            }
 
-    async getFeatured(limit: number): Promise<{ success: boolean, projects?: any[], message?:string}> {
-        try {
-            const mongoDb = await connectDb();
-            const projects = await mongoDb.collection('projects').find({}).sort({created: 1}).limit(limit).toArray();
-            if (projects) {
-                return {success: true, projects: projects}
-            } else {
-                return {success: false }
-            } 
-            
-        } catch(err) {
+        } catch (err) {
             error.log(`UserGroup.getAll Error`, err);
-            return {success: false, message: `An Error Occurred`};
-        }    
+            return { success: false, message: `An Error Occurred` };
+        }
     }
 
-    async search(text: string, tags: string[]): Promise<{ success: boolean, projects?: any[], message?:string}> {
+    async getFeatured(limit: number): Promise<{ success: boolean, projects?: any[], message?: string }> {
+        try {
+            const mongoDb = await connectDb();
+            const projects = await mongoDb.collection('projects').find({ "featured": true }).sort({ created: 1 }).limit(limit).toArray();
+            if (projects) {
+                return { success: true, projects: projects }
+            } else {
+                return { success: false }
+            }
+
+        } catch (err) {
+            error.log(`UserGroup.getAll Error`, err);
+            return { success: false, message: `An Error Occurred` };
+        }
+    }
+
+    async search(text: string, tags: string[]): Promise<{ success: boolean, projects?: any[], message?: string }> {
         try {
             const mongoDb = await connectDb();
             const query = {};
@@ -192,14 +192,14 @@ export class Project {
 
             const projects = await mongoDb.collection('projects').find(query).toArray();
             if (projects) {
-                return {success: true, projects: projects}
+                return { success: true, projects: projects }
             } else {
-                return {success: false }
-            } 
-            
-        } catch(err) {
-            return {success: false, message: `An Error Occurred`};
-        }    
+                return { success: false }
+            }
+
+        } catch (err) {
+            return { success: false, message: `An Error Occurred` };
+        }
     }
 
     async getEditable(userId, projectId): Promise<GetEditableProjectRes> {
@@ -208,7 +208,7 @@ export class Project {
             const project = projectRes.project;
             const projectUserGroupId = project.userGroupId;
             const authorised = await auth.authorised('project', projectActions.canEdit, userId, projectUserGroupId);
-            if(authorised && authorised.authorised) {
+            if (authorised && authorised.authorised) {
                 const userGroupRole = await userGroup.getUserGroupRole(userId, projectUserGroupId);
                 if (userGroupRole) {
                     const projectActionAuthorised = await auth.getAuthActionsList(userGroupRole, 'project');
@@ -216,197 +216,229 @@ export class Project {
                         ...project,
                         ...projectActionAuthorised
                     }
-                    return {success: true, project: editableProject }
+                    return { success: true, project: editableProject }
                 } else {
-                    return {success: false, message: `Unauthorised`}
+                    return { success: false, message: `Unauthorised` }
                 }
             } else {
-                return {success: false, message: `Unauthorised`}
+                return { success: false, message: `Unauthorised` }
             }
-            
-        } catch(err) {
+
+        } catch (err) {
             error.log(`UserGroup.getEditable: userId: ${userId}`, err);
-            return {success: false, message: `userId: ${userId}, Error Occurred`};
+            return { success: false, message: `userId: ${userId}, Error Occurred` };
         }
     }
 
-    async editName(userId, projectId, names): Promise<GetEditableProjectRes> {
+    async editName(userId: string, userGroupId: string, projectId: string, language: string, text: string): Promise<StandardResponse> {
         try {
             const mongoDb = await connectDb();
-            const project: any = await mongoDb.collection(collection.projects).findOne({_id: new ObjectId(projectId)}); 
-            if(project) {
-                const projectUserGroupId = project.userGroupId;
-                const authorised = await auth.authorised('project', projectActions.canEditName, userId, projectUserGroupId);
-                if(authorised) {
-                    if(authorised.authorised) {
-                        const nameUpdate = [];
-                        names.forEach(name => {
-                            if('language' in name && 'text' in name){
-                                nameUpdate.push(name)
-                            }
-                        });
-                        const updated = await mongoDb.collection(collection.projects).updateOne({_id: new ObjectId(projectId)}, {
-                            name: nameUpdate,
-                            updatedDate: new Date(), 
-                            updatedBy: new ObjectId(userId)
-                        })
-                        if(updated){
-                            return {success: true};
-                        } else {
-                            return {success: false, message: `userId: ${userId}, Error Occurred`};
+            const authorised = await auth.authorised('project', projectActions.canEditName, userId, userGroupId);
+            if (authorised && authorised.authorised) {
+                const updated = await mongoDb.collection(collection.projects).updateOne(
+                { 
+                    _id: new ObjectId(projectId),
+                    name: { 
+                        $elemMatch: {
+                            'language': { $eq: language}
                         }
-                    } else {
-                        return {success: false, message: `Unauthorised`};
                     }
+                }, {
+                    $set: {
+                        'name.$.text': text,
+                        updatedDate: new Date(),
+                        updatedBy: new ObjectId(userId)
+                    }
+                })
+                if (updated && updated.modifiedCount > 0) {
+                    return { success: true };
                 } else {
-                    return {success: false, message: `Failed to get Authorisation`};
+                    return { success: false, message: `userId: ${userId}, Error Occurred` };
                 }
             } else {
-                return {success: false, message: `Project (${projectId}) not found`};
+                return { success: false, message: `Unauthorised` };
             }
-        } catch(err) {
-            error.log(`Project.editName: userId: ${userId}, projectId: ${projectId}, names: ${names}`, err);
-            return {success: false, message: `userId: ${userId}, Error Occurred`};
-        } 
-    } 
-    
-    async editDesc(userId, projectId, descs): Promise<StandardResponse> {
+        } catch (err) {
+            error.log(`Project.editName: userId: ${userId}, projectId: ${projectId}, name: ${text}`, err);
+            return { success: false, message: `userId: ${userId}, Error Occurred` };
+        }
+    }
+
+    async editDesc(userId: string, userGroupId: string, projectId: string, language: string, text: string): Promise<StandardResponse> {
         try {
             const mongoDb = await connectDb();
-            const project: any = await mongoDb.collection(collection.projects).findOne({_id: new ObjectId(projectId)}); 
-            if(project) {
-                const projectUserGroupId = project.userGroupId;
-                const authorised = await auth.authorised('project', projectActions.canEditDesc, userId, projectUserGroupId);
-                if(authorised) {
-                    if(authorised.authorised) {
-                        const descUpdate = [];
-                        descs.forEach(desc => {
-                            if('language' in desc && 'text' in desc){
-                                descUpdate.push(desc)
-                            }
-                        });
-                        
-                        const updated = await mongoDb.collection(collection.projects).updateOne({_id: projectId}, {
-                            desc: descUpdate, 
-                            updatedDate: new Date(), 
-                            updatedBy: userId
-                        });
-                        if(updated){
-                            return {success: true};
-                        } else {
-                            return {success: false};
+            const authorised = await auth.authorised('project', projectActions.canEditDesc, userId, userGroupId);
+            if (authorised && authorised.authorised) {
+                const updated = await mongoDb.collection(collection.projects).updateOne(
+                { 
+                    _id: new ObjectId(projectId),
+                    desc: { 
+                        $elemMatch: {
+                            'language': { $eq: language}
                         }
-                    } else {
-                        return {success: false, message: `Unauthorised`};
                     }
+                }, {
+                    $set: {
+                        'desc.$.text': text,
+                        updatedDate: new Date(),
+                        updatedBy: new ObjectId(userId)
+                    }
+                })
+                if (updated && updated.modifiedCount > 0) {
+                    return { success: true };
                 } else {
-                    return {success: false, message: `Failed to get Authorisation`};
+                    return { success: false, message: `userId: ${userId}, Error Occurred` };
                 }
             } else {
-                return {success: false, message: `Project (${projectId}) not found`};
+                return { success: false, message: `Unauthorised` };
             }
-        } catch(err) {
-            error.log(`UserGroup.getAll: userId: ${userId}`, err);
-            return {success: false, message: `userId: ${userId}, Error Occurred`};
-        }    
-    } 
+        } catch (err) {
+            error.log(`Project.editDesc: userId: ${userId}, projectId: ${projectId}, name: ${text}`, err);
+            return { success: false, message: `userId: ${userId}, Error Occurred` };
+        }
+    }
+
+    async editProjectUrl(userId: string, userGroupId: string, projectId: string, projectUrl: string): Promise<StandardResponse> {
+        try {
+            const mongoDb = await connectDb();
+            const authorised = await auth.authorised('project', projectActions.canEditName, userId, userGroupId); 
+            if (authorised && authorised.authorised) {
+                const updated = await mongoDb.collection(collection.projects).updateOne(
+                { 
+                    _id: new ObjectId(projectId)
+                }, {
+                    $set: {
+                        projectUrl,
+                        updatedDate: new Date(),
+                        updatedBy: new ObjectId(userId)
+                    }
+                })
+                if (updated && updated.modifiedCount > 0) {
+                    return { success: true };
+                } else {
+                    return { success: false, message: `userId: ${userId}, Error Occurred` };
+                }
+            } else {
+                return { success: false, message: `Unauthorised` };
+            }
+        } catch (err) {
+            error.log(`Project.editDesc: userId: ${userId}, projectId: ${projectId}, name: ${projectUrl}`, err);
+            return { success: false, message: `userId: ${userId}, Error Occurred` };
+        }
+    }
 
     async editUserGroup(userId: string, projectId: string, newUserGroupId: string): Promise<StandardResponse> {
         try {
             const mongoDb = await connectDb();
-            const newUserGroupDoc = await mongoDb.collection(collection.userGroups).findOne({_id: new ObjectId(newUserGroupId)}); 
-            if(newUserGroupDoc) {
-                const project: any = await mongoDb.collection(collection.projects).findOne({_id: new ObjectId(projectId)});
-                if(project) {
+            const newUserGroupDoc = await mongoDb.collection(collection.userGroups).findOne({ _id: new ObjectId(newUserGroupId) });
+            if (newUserGroupDoc) {
+                const project: any = await mongoDb.collection(collection.projects).findOne({ _id: new ObjectId(projectId) });
+                if (project) {
                     const projectUserGroupId = project.userGroupId;
                     const currentUserGroupAuthorised = await auth.authorised('project', 'canChangeUserGroup', userId, projectUserGroupId);
                     const newUserGroupAuthorised = await auth.authorised('project', 'canChangeUserGroup', userId, newUserGroupId);
-                    if(currentUserGroupAuthorised && newUserGroupAuthorised) {
-                        if(currentUserGroupAuthorised.authorised && newUserGroupAuthorised.authorised) {
-                            const updated = await mongoDb.collection(collection.projects).updateOne({_id: new ObjectId(projectId)}, {
+                    if (currentUserGroupAuthorised && newUserGroupAuthorised) {
+                        if (currentUserGroupAuthorised.authorised && newUserGroupAuthorised.authorised) {
+                            const updated = await mongoDb.collection(collection.projects).updateOne({ _id: new ObjectId(projectId) }, {
                                 $set: {
-                                    userGroupId: new ObjectId(newUserGroupId), 
-                                    updatedDate: new Date(), 
+                                    userGroupId: new ObjectId(newUserGroupId),
+                                    updatedDate: new Date(),
                                     updatedBy: new ObjectId(userId)
                                 }
                             });
-                            if(updated){
-                                return {success: true};
+                            if (updated) {
+                                return { success: true };
                             } else {
-                                return {success: false};
+                                return { success: false };
                             }
                         } else {
-                            return {success: false, message: `Unauthorised`};
+                            return { success: false, message: `Unauthorised` };
                         }
                     } else {
-                        return {success: false, message: `Failed to get Authorisation`};
+                        return { success: false, message: `Failed to get Authorisation` };
                     }
                 } else {
-                    return {success: false, message: `Project (${projectId}) not found`};
+                    return { success: false, message: `Project (${projectId}) not found` };
                 }
             } else {
-                return {success: false, message: `New User Group (${newUserGroupId}) does not exist`};
+                return { success: false, message: `New User Group (${newUserGroupId}) does not exist` };
             }
-        } catch(err) {
+        } catch (err) {
             error.log(`UserGroup.getAll: userId: ${userId}`, err);
-            return {success: false, message: `userId: ${userId}, Error Occurred`};
-        }   
-    } 
+            return { success: false, message: `userId: ${userId}, Error Occurred` };
+        }
+    }
 
-    async editPublished(userId, projectId, published: boolean): Promise<StandardResponse> {
+    async editPublished(userId: string, userGroupId: string, projectId: string, published: boolean): Promise<StandardResponse> {
         try {
             const mongoDb = await connectDb();
-            const project: any = await mongoDb.collection(collection.projects).find({_id: new ObjectId(projectId)}); 
-            if(project) {
-                const projectUserGroupId = project.userGroupId;
-                const userGroupAuthorised = await auth.authorised('project', 'canEditPublished', userId, projectUserGroupId);
-                if(userGroupAuthorised) {
-                    if(userGroupAuthorised.authorised) {
-                        const updated = await mongoDb.collection(collection.projects).updateOne({ _id: new ObjectId(projectId) }, {
-                            $set: {
-                                published: published, 
-                                updatedDate: new Date(), 
-                                updatedBy: new ObjectId(userId)
-                            }
-                        });
-                        if(updated){
-                            return {success: true};
-                        } else {
-                            return {success: false};
-                        }
-                    } else {
-                        return {success: false, message: `Unauthorised`};
+            const authorised = await auth.authorised('project', 'canEditPublished', userId, userGroupId);
+            if (authorised && authorised.authorised) {
+                const updated = await mongoDb.collection(collection.projects).updateOne({ _id: new ObjectId(projectId) }, {
+                    $set: {
+                        published: published,
+                        updatedDate: new Date(),
+                        updatedBy: new ObjectId(userId)
                     }
+                });
+                if (updated) {
+                    return { success: true };
                 } else {
-                    return {success: false, message: `Failed to get Authorisation`};
+                    return { success: false };
                 }
             } else {
-                return {success: false, message: `Project (${projectId}) not found`};
+                return { success: false, message: `Unauthorised` };
             }
-        } catch(err) {
+        } catch (err) {
             error.log(`UserGroup.getAll: userId: ${userId}`, err);
-            return {success: false, message: `userId: ${userId}, Error Occurred`};
-        }     
-    } 
+            return { success: false, message: `userId: ${userId}, Error Occurred` };
+        }
+    }
 
-    async addTag(projectId:string, tagId: string, userId: string): Promise<StandardResponse> {
+    async editFeatured(userId: string, userGroupId: string, projectId: string, featured: boolean): Promise<StandardResponse> {
+        try {
+            const mongoDb = await connectDb();
+            const authorised = await auth.authorised('project', 'canEditPublished', userId, userGroupId);
+            if (authorised && authorised.authorised) {
+                const updated = await mongoDb.collection(collection.projects).updateOne({ _id: new ObjectId(projectId) }, {
+                    $set: {
+                        featured: featured,
+                        updatedDate: new Date(),
+                        updatedBy: new ObjectId(userId)
+                    }
+                });
+                if (updated) {
+                    return { success: true };
+                } else {
+                    return { success: false };
+                }
+            } else {
+                return { success: false, message: `Unauthorised` };
+            }
+        } catch (err) {
+            error.log(`UserGroup.getAll: userId: ${userId}`, err);
+            return { success: false, message: `userId: ${userId}, Error Occurred` };
+        }
+    }
+
+    async addTag(projectId: string, tagId: string, userId: string): Promise<StandardResponse> {
         try {
             console.log('Project.addTag: ', projectId, tagId, userId);
             const mongoDb = await connectDb();
-            const project = await mongoDb.collection(collection.projects).findOne({_id: new ObjectId(projectId)});
+            const project = await mongoDb.collection(collection.projects).findOne({ _id: new ObjectId(projectId) });
             console.log('project :', project);
             const projectUserGroupId = project.userGroupId;
             const projectAuthorized = await auth.authorised('project', 'canAddTag', userId, projectUserGroupId);
             console.log('projectAuthorized :', projectAuthorized);
 
-            const tag = await mongoDb.collection(collection.tags).findOne({_id: new ObjectId(tagId)});
+            const tag = await mongoDb.collection(collection.tags).findOne({ _id: new ObjectId(tagId) });
             console.log('tag :', tag);
             const tagUserGroupId = tag.userGroupId;
             const tagAuthorised = await auth.authorised('tag', 'canAddTagReference', userId, tagUserGroupId)
             console.log('tagAuthorised :', tagAuthorised);
 
             if (projectAuthorized.authorised && tagAuthorised.authorised) {
-                const updatedProject = await mongoDb.collection(collection.projects).updateOne({_id: new ObjectId(projectId)}, {
+                const updatedProject = await mongoDb.collection(collection.projects).updateOne({ _id: new ObjectId(projectId) }, {
                     $addToSet: {
                         tags: new ObjectId(tagId)
                     },
@@ -416,29 +448,29 @@ export class Project {
                     }
                 })
                 if (updatedProject) {
-                    return {success: true, message: 'Tag Added to Project'}
+                    return { success: true, message: 'Tag Added to Project' }
                 } else {
-                    return {success: false, message: 'Failed to add tag to Project'}
+                    return { success: false, message: 'Failed to add tag to Project' }
                 }
             } else {
-                return { success: false, message: `You do not have authorization`} // need to say from what
+                return { success: false, message: `You do not have authorization` } // need to say from what
             }
         } catch (err) {
             error.log('Tag.addTag', err)
-            return { success: false, message: 'An Error Occurred'}
+            return { success: false, message: 'An Error Occurred' }
         }
     }
 
-    async removeTag(projectId:string, tagId: string, userId: string): Promise<StandardResponse> {
+    async removeTag(projectId: string, tagId: string, userId: string): Promise<StandardResponse> {
         try {
             console.log('Project.removeTag: ', projectId, tagId, userId);
             const mongoDb = await connectDb();
-            const project = await mongoDb.collection(collection.projects).findOne({_id: new ObjectId(projectId)});
+            const project = await mongoDb.collection(collection.projects).findOne({ _id: new ObjectId(projectId) });
             const projectUserGroupId = project.userGroupId;
             const projectAuthorized = await auth.authorised('project', projectActions.canDeleteTag, userId, projectUserGroupId);
 
             if (projectAuthorized.authorised) {
-                const updatedProject = await mongoDb.collection(collection.projects).updateOne({_id: new ObjectId(projectId)}, {
+                const updatedProject = await mongoDb.collection(collection.projects).updateOne({ _id: new ObjectId(projectId) }, {
                     $pull: {
                         tags: new ObjectId(tagId)
                     },
@@ -448,24 +480,24 @@ export class Project {
                     }
                 })
                 if (updatedProject) {
-                    return {success: true, message: 'Tag Removed from Project'}
+                    return { success: true, message: 'Tag Removed from Project' }
                 } else {
-                    return {success: false, message: 'Failed to remove tag from Project'}
+                    return { success: false, message: 'Failed to remove tag from Project' }
                 }
             } else {
-                return { success: false, message: `You do not have authorization`} // need to say from what
+                return { success: false, message: `You do not have authorization` } // need to say from what
             }
         } catch (err) {
             error.log('Tag.createTag', err)
-            return { success: false, message: 'An Error Occurred'}
+            return { success: false, message: 'An Error Occurred' }
         }
     }
 
-    async reorderTags(projectId:string, tagIds: string[], userId: string): Promise<StandardResponse> {
+    async reorderTags(projectId: string, tagIds: string[], userId: string): Promise<StandardResponse> {
         try {
             console.log('Project.reorder: ', projectId, tagIds, userId);
             const mongoDb = await connectDb();
-            const project = await mongoDb.collection(collection.projects).findOne({_id: new ObjectId(projectId)});
+            const project = await mongoDb.collection(collection.projects).findOne({ _id: new ObjectId(projectId) });
             console.log('project :', project);
             const oldOrder = project.tags;
             console.log('oldOrder :', oldOrder);
@@ -477,7 +509,7 @@ export class Project {
                 const same = _.isEmpty(_.xor(oldOrder, tagIds));  // check same elements
                 console.log('same :', same);
                 if (same) {
-                    const updatedProject = await mongoDb.collection(collection.projects).updateOne({_id: new ObjectId(projectId)}, {
+                    const updatedProject = await mongoDb.collection(collection.projects).updateOne({ _id: new ObjectId(projectId) }, {
                         $set: {
                             tags: tagIds,
                             updated: new Date(),
@@ -485,20 +517,20 @@ export class Project {
                         }
                     })
                     if (updatedProject) {
-                        return {success: true, message: 'Tag Added to Project'}
+                        return { success: true, message: 'Tag Added to Project' }
                     } else {
-                        return {success: false, message: 'Failed to reorder tags'}
+                        return { success: false, message: 'Failed to reorder tags' }
                     }
                 } else {
-                    error.log(`Project.reorderTags: ${projectId}, ${tagIds}, ${userId}`, )
-                    return {success: false, message: 'Failed to reorder tags'}
+                    error.log(`Project.reorderTags: ${projectId}, ${tagIds}, ${userId}`,)
+                    return { success: false, message: 'Failed to reorder tags' }
                 }
             } else {
-                return { success: false, message: `You do not have authorization`} // need to say from what
+                return { success: false, message: `You do not have authorization` } // need to say from what
             }
         } catch (err) {
             error.log('Tag.reorderTags', err)
-            return { success: false, message: 'An Error Occurred'}
+            return { success: false, message: 'An Error Occurred' }
         }
     }
 
@@ -506,7 +538,7 @@ export class Project {
         try {
             const variables = {
                 slug: projectSlug,
-                space: orgSlug 
+                space: orgSlug
             };
             const query = `fragment projectFields on Project {
                 id
@@ -533,9 +565,9 @@ export class Project {
                         ...projectFields
                     }
                 }
-            }`; 
+            }`;
             return request(configs.wikifactoryEndpoint, query, variables)
-                .then((data: any) => { 
+                .then((data: any) => {
                     const pro = data.project.result
                     if (pro !== null) {
                         const res: ProjectWiki = {
@@ -544,12 +576,12 @@ export class Project {
                             name: pro.name,
                             desc: pro.description,
                             imageUrl: pro.image.url,
-                            projectUrl: 'https://projects.humanitarianmaking.org/' + orgSlug + '/' + projectSlug 
+                            projectUrl: 'https://projects.humanitarianmaking.org/' + orgSlug + '/' + projectSlug
                         }
-                        return res; 
+                        return res;
                     } else {
                         throw new Error(`Project with slug of ${projectSlug} does not exit`)
-                    } 
+                    }
                 })
                 .catch((err) => {
                     throw err;
@@ -558,17 +590,17 @@ export class Project {
             error.log('Project.getFromWikifactory', err);
             return err;
         }
-    } 
+    }
 
-    async getProject (projectId: string): Promise<any> {
+    async getProject(projectId: string): Promise<any> {
         try {
             const mongoDb = await connectDb();
-            const project = await mongoDb.collection(collection.projects).findOne({_id: projectId});
+            const project = await mongoDb.collection(collection.projects).findOne({ _id: projectId });
             if (project) {
                 return project
             } else {
                 return null;
-            } 
+            }
         }
         catch (err) {
             error.log('Project.getProject', err);
@@ -588,16 +620,16 @@ export class Project {
             const mongoDb = await connectDb();
             const userGroupId = await this.getUserGroupIdFromName(project.organisation);
             const projectToCreate = {
-                slug: projectId,        
+                slug: projectId,
                 published: false,
-                name: [{language: 'english', text: project.name}],
-                desc: [{language: 'english', text: project.desc}],
+                name: [{ language: 'english', text: project.name }],
+                desc: [{ language: 'english', text: project.desc }],
                 tags: [],
                 created: new Date(),
             };
 
             const proj: UpdateWriteOpResult = await mongoDb.collection('projects').updateOne(
-                {slug: projectId}, 
+                { slug: projectId },
                 {
                     $set: {
                         userGroupId: userGroupId,
@@ -607,30 +639,30 @@ export class Project {
                     },
                     $setOnInsert: projectToCreate,
                 },
-                { upsert: true}
+                { upsert: true }
             );
             if (proj) {
-                if(proj.result.nModified === 1) {
-                    return { projectId: projectId, status: 'updated'};
-                } else if(proj.upsertedCount === 1) {
-                    return { projectId: projectId, status: 'created'};
+                if (proj.result.nModified === 1) {
+                    return { projectId: projectId, status: 'updated' };
+                } else if (proj.upsertedCount === 1) {
+                    return { projectId: projectId, status: 'created' };
                 } else {
-                    return { projectId: projectId, status: 'error'};
+                    return { projectId: projectId, status: 'error' };
                 }
             } else {
                 console.log('Project not updated');
-                return { projectId: projectId, status: 'failed'};
+                return { projectId: projectId, status: 'failed' };
             }
         } catch (err) {
             error.log('Project.updateOrCreateOne', err);
-            return { projectId: project.name, status: 'Error occurred: failed to created'};
+            return { projectId: project.name, status: 'Error occurred: failed to created' };
         }
     }
 
     generateProjectId(project: ProjectWiki): string {
         try {
             return project.organisation + '-' + project.slug;
-        } catch (err){
+        } catch (err) {
             error.log('Project.generateProjectId', err);
             return null;
         }
@@ -661,14 +693,14 @@ export class Project {
 
         const mongoDb = await connectDb();
         const upsertedUserGroup = await mongoDb.collection(collection.userGroups).updateOne(
-            {name: name}, 
+            { name: name },
             {
                 $setOnInsert: {
                     created: new Date(),
                     open: false
                 }
-            }, 
-            {upsert: true}
+            },
+            { upsert: true }
         );
         if (upsertedUserGroup && upsertedUserGroup.upsertedId) {
             console.log('upsertedUserGroup :', upsertedUserGroup);
@@ -745,7 +777,7 @@ export class Project {
                         ...projectConnectionFields
                     }
                 }
-            }`; 
+            }`;
 
             const variables = {
                 "sortBy": "discover_recent",
@@ -760,7 +792,7 @@ export class Project {
             }
 
             return request(configs.wikifactoryEndpoint, query, variables)
-                .then((data: any) => { 
+                .then((data: any) => {
                     const projects: any[] = data.projects.result.edges;
                     const projectsArray: ProjectWiki[] = [];
                     projects.forEach(project => {
@@ -785,27 +817,27 @@ export class Project {
             error.log('Project.getFromWikifactory', err);
             return err;
         }
-    }    
+    }
 
     async syncWithWikifactory(userId): Promise<any> {
-        return new Promise( async (resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             try {
                 const startTime = new Date();
                 const projectWikis: ProjectWiki[] = await this.getAllFromWikifactory();
                 const array = []
                 projectWikis.forEach((project) => {
-                    array.push(this.updateOrCreateOne(project));   
+                    array.push(this.updateOrCreateOne(project));
                 });
                 Promise.all(array)
-                    .then( async (res) => {
+                    .then(async (res) => {
                         await this.createSyncReport(userId, startTime, new Date(), res);
                         resolve(res);
                     })
-                    .catch( async (err) => {
+                    .catch(async (err) => {
                         await this.createSyncReport(userId, startTime, new Date(), {}, err);
                         throw err
                     });
-            } catch(err) {
+            } catch (err) {
                 error.log('Project.updateAll', err);
                 reject(err);
             }
@@ -820,25 +852,25 @@ export class Project {
                 resource: 'projects',
                 userId,
                 start,
-                end, 
+                end,
                 result,
                 error: err
             });
-        } catch(err) {
+        } catch (err) {
             error.log('Project.createSyncReport', err);
         }
     }
 
-    async getSyncReports(): Promise<{success: boolean, message?: string, syncReports?: any[]}> {
+    async getSyncReports(): Promise<{ success: boolean, message?: string, syncReports?: any[] }> {
         try {
             const mongoDb = await connectDb();
             const syncReports = await mongoDb.collection(collection.syncReports).find({}).toArray()
-            return {success: true,  syncReports};
-        } catch(err) {
-            return {success: false,  message: 'Failed to get Sync Reports'};
+            return { success: true, syncReports };
+        } catch (err) {
+            return { success: false, message: 'Failed to get Sync Reports' };
         }
     }
-    
+
 }
 
 interface ProjectUpdate {

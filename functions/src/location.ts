@@ -50,66 +50,54 @@ export class Location {
 
     }
 
-    async editName (userId, locationId, name): Promise<StandardResponse> {
+    async editName (userId: string, userGroupId: string, locationId: string, name: string): Promise<StandardResponse> {
         try {
             const mongoDb = await connectDb();
-            const location: any = await mongoDb.collection(collection.locations).findOne({_id: new ObjectId(locationId)}); 
-            if(location) {
-                const locationUserGroupId = location.userGroupId;
-                const authorised = await auth.authorised('location', locationsActions.canEditName, userId, locationUserGroupId);
-                if(authorised && authorised.authorised) {
-                    const updated = await mongoDb.collection(collection.locations).updateOne({_id: new ObjectId(locationId)}, {
-                        $set: {
-                            name,
-                            updatedDate: new Date(), 
-                            updatedBy: new ObjectId(userId)   
-                        }
-                    })
-                    if(updated){
-                        return {success: true};
-                    } else {
-                        return {success: false, message: `userId: ${userId}, Error Occurred`};
+            const authorised = await auth.authorised('location', locationsActions.canEditName, userId, userGroupId);
+            if(authorised && authorised.authorised) {
+                const updated = await mongoDb.collection(collection.locations).updateOne({_id: new ObjectId(locationId)}, {
+                    $set: {
+                        name,
+                        updatedDate: new Date(), 
+                        updatedBy: new ObjectId(userId)   
                     }
+                })
+                if(updated){
+                    return {success: true};
                 } else {
-                    return {success: false, message: `Failed to get Authorisation`};
+                    return {success: false, message: `userId: ${userId}, Error Occurred`};
                 }
             } else {
-                return {success: false, message: `Location (${locationId}) not found`};
+                return {success: false, message: `Failed to get Authorisation`};
             }
         } catch(err) {
-            error.log(`Location.editName: userId: ${userId}, projectId: ${locationId}, name: ${name}`, err);
+            error.log(`Location.editName: userId: ${userId}, locationId: ${locationId}, name: ${name}`, err);
             return {success: false, message: `userId: ${userId}, Error Occurred`};
         } 
     }
 
-    async editWebsite (userId: string, locationId: string, websiteUrl: string): Promise<StandardResponse> {
+    async editWebsite (userId: string, userGroupId: string, locationId: string, websiteUrl: string): Promise<StandardResponse> {
         try {
             const mongoDb = await connectDb();
-            const location: any = await mongoDb.collection(collection.locations).findOne({_id: new ObjectId(locationId)}); 
-            if(location) {
-                const locationUserGroupId = location.userGroupId;
-                const authorised = await auth.authorised('location', locationsActions.canEditWebsite, userId, locationUserGroupId);
-                if(authorised && authorised.authorised) {
-                    const updated = await mongoDb.collection(collection.locations).updateOne({_id: new ObjectId(locationId)}, {
-                        $set: {
-                            websiteUrl,
-                            updatedDate: new Date(), 
-                            updatedBy: new ObjectId(userId)   
-                        }
-                    })
-                    if(updated){
-                        return {success: true};
-                    } else {
-                        return {success: false, message: `userId: ${userId}, Error Occurred`};
+            const authorised = await auth.authorised('location', locationsActions.canEditWebsite, userId, userGroupId);
+            if(authorised && authorised.authorised) {
+                const updated = await mongoDb.collection(collection.locations).updateOne({_id: new ObjectId(locationId)}, {
+                    $set: {
+                        websiteUrl,
+                        updatedDate: new Date(), 
+                        updatedBy: new ObjectId(userId)   
                     }
+                })
+                if(updated){
+                    return {success: true};
                 } else {
-                    return {success: false, message: `Failed to get Authorisation`};
+                    return {success: false, message: `userId: ${userId}, Error Occurred`};
                 }
             } else {
-                return {success: false, message: `Location (${locationId}) not found`};
+                return {success: false, message: `Failed to get Authorisation`};
             }
         } catch(err) {
-            error.log(`Location.editWebsite: userId: ${userId}, projectId: ${locationId}, name: ${name}`, err);
+            error.log(`Location.editWebsite: userId: ${userId}, locationId: ${locationId}, name: ${name}`, err);
             return {success: false, message: `userId: ${userId}, Error Occurred`};
         } 
     }
