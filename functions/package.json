@@ -27,7 +27,7 @@
     "graphql-request": "^1.8.2",
     "graphql-tag": "^2.10.3",
     "graphql-types": "^1.1.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "mongodb": "^3.5.7",
     "mongoose": "^5.9.14",
     "save": "^2.4.0"
